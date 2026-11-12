@@ -28,6 +28,11 @@ def _root() -> Path:
 
 
 def _norm(path: str) -> str:
+    """One spelling per folder: resolved (.., links, Windows short 8.3 names), forward slashes, case folded."""
+    try:
+        path = str(Path(path).resolve())
+    except (OSError, RuntimeError):
+        pass
     return path.replace("\\", "/").rstrip("/").casefold()
 
 

@@ -52,6 +52,15 @@ class OnEditTest(unittest.TestCase):
         self.assertFalse(should_handle(r"D:\notes\kb\工具\build.py", root))
         self.assertTrue(should_handle(r"D:\notes\kb\设计\x.md", root))
 
+    def test_should_handle_the_same_folder_spelled_two_ways(self):
+        # e.g. a Windows short 8.3 name versus the long name: both resolve to the same folder
+        kb = self.base / "kb"
+        (kb / "概念").mkdir(parents=True)
+        (kb / "概念" / "a.md").write_text("x", encoding="utf-8")
+        other_spelling = self.base / "kb" / "概念" / ".." / ".." / "kb"
+        self.assertTrue(should_handle(str(kb / "概念" / "a.md"), other_spelling))
+        self.assertTrue(should_handle(str(other_spelling / "概念" / "a.md"), kb))
+
     def test_commit_gives_up_on_lock_without_raising(self):
         repo = self._tmp_repo()
         (repo / "a.md").write_text("x", encoding="utf-8")
