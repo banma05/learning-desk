@@ -40,10 +40,23 @@ def build_status(root: Path, today: date, now: datetime | None = None) -> str:
     week = _this_week(root / "计划" / "总计划.md", today)
     if week:
         lines.append(week)
+    report = _weekly_report(root, today)
+    if report:
+        lines.append(report)
     prefixes = [prefix for prefix, _ in load_config(root)[0].prefixes]
     lines.append(_max_numbers(root / "问题.md", prefixes))
     lines.extend(_health(root, now))
     return "\n".join(lines)[:MAX_CHARS]
+
+
+def _weekly_report(root: Path, today: date) -> str | None:
+    """From Friday to Sunday: remind to write this week's report, named after the week's Monday."""
+    if today.weekday() < 4:
+        return None
+    name = f"{today - timedelta(days=today.weekday()):%Y-%m-%d}.md"
+    if (root / "周报" / name).exists():
+        return None
+    return f"本周周报：还没写（周报/{name}），下班写复盘时顺手写，写法见维护约定"
 
 
 def _previous_log(plan_dir: Path, today: date) -> Path | None:

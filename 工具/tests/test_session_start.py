@@ -32,7 +32,7 @@ class SessionStartTest(unittest.TestCase):
 
     def test_no_week_line_without_overview(self):
         s = build_status(FIXTURES / "空知识库", date(2025, 10, 26))
-        self.assertNotIn("本周", s)
+        self.assertNotIn("总计划", s)
 
     def test_this_week_row_on_a_workday(self):
         s = build_status(FIXTURES / "昨天缺日志", date(2025, 10, 24))
@@ -126,6 +126,18 @@ class ConfigPrefixTest(unittest.TestCase):
         (self.root / "计划" / "总计划.md").write_text(
             "# 总计划\n\n## 三、进度表\n\n| 周 | 计划：交付 | 节点 |\n|---|---|---|\n", encoding="utf-8")
         self.assertIn("本周：总计划的进度表还是空的，可以和使用者一起排", build_status(self.root, date(2026, 1, 5)))
+
+    def test_weekly_report_reminder_from_friday(self):
+        for today in (date(2026, 1, 9), date(2026, 1, 10), date(2026, 1, 11)):  # Fri, Sat, Sun
+            self.assertIn("本周周报：还没写（周报/2026-01-05.md）", build_status(self.root, today), today)
+
+    def test_no_weekly_report_reminder_once_written(self):
+        (self.root / "周报").mkdir()
+        (self.root / "周报" / "2026-01-05.md").write_text("本周工作", encoding="utf-8")
+        self.assertNotIn("周报", build_status(self.root, date(2026, 1, 9)))
+
+    def test_no_weekly_report_reminder_midweek(self):
+        self.assertNotIn("周报", build_status(self.root, date(2026, 1, 8)))  # Thursday
 
     def test_session_start_survives_broken_config(self):
         (self.root / "学习台配置.json").write_text("{", encoding="utf-8")
