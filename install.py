@@ -324,7 +324,7 @@ def main(argv: list[str] | None = None) -> int:
     kb, now = args.kb.expanduser().resolve(), datetime.now()
     try:
         if args.update:
-            if kb == REPO or REPO in kb.parents:
+            if _inside_repo(kb):
                 raise InstallError(f"这是 learning-desk 仓库本身，不是知识库：{kb}")
             if args.dry_run:
                 print(f"会用 {TOOL} 替换 {kb / '工具'}，笔记和配置不动")
@@ -356,7 +356,7 @@ def _uninstall(kb: Path, args, now: datetime) -> None:
 
 
 def _install(kb: Path, args, now: datetime) -> None:
-    if kb == REPO or REPO in kb.parents:
+    if _inside_repo(kb):
         raise InstallError(f"知识库不要放在这个仓库里面（{REPO}），换一个文件夹，免得笔记被一起推上去")
     if "#" in str(kb):
         raise InstallError(f"知识库路径里不能有 #，Claude Code 读不到这样的路径：{kb}")
@@ -386,6 +386,12 @@ def _install(kb: Path, args, now: datetime) -> None:
               f"- 双击 {kb / '学习台.html'} 看网页\n"
               f"- 新开一个 Claude Code 会话，先请 Claude 帮你填好 {RULES_FILE} 第一节\"我是谁\"\n"
               "- 以后在任何项目里和 Claude 聊，它都会按约定把学到的东西记进来")
+
+
+def _inside_repo(path: Path) -> bool:
+    """path is this repository or inside it (both resolved: Windows may hand out short 8.3 names)."""
+    repo = REPO.resolve()
+    return path == repo or repo in path.parents
 
 
 def _display(path: str) -> str:

@@ -19,6 +19,17 @@ NOW = datetime(2026, 1, 5, 9, 30, 0)
 PY = "C:/Python/python.exe"
 
 
+def _bash() -> str | None:
+    """The bash Claude Code runs hooks with: Git Bash on Windows (System32's bash.exe is WSL), else bash."""
+    if os.name != "nt":
+        return shutil.which("bash")
+    git = shutil.which("git")
+    for folder in Path(git).resolve().parents if git else []:  # git.exe sits in cmd/ or e.g. ucrt64/bin/
+        if (folder / "bin" / "bash.exe").exists():
+            return str(folder / "bin" / "bash.exe")
+    return None
+
+
 class InstallTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -324,18 +335,18 @@ class InstallTest(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertIn("boom: 生成失败的原因", out)
 
-    @unittest.skipUnless(shutil.which("bash"), "needs bash")
+    @unittest.skipUnless(_bash(), "needs bash (Git Bash on Windows)")
     def test_hook_commands_run_in_a_real_shell(self):
         kb = self.base / "我的 笔记"
         self._install(kb)
         hooks = self._settings()["hooks"]
-        start = subprocess.run(["bash", "-c", hooks["SessionStart"][-1]["hooks"][0]["command"]], input="",
+        start = subprocess.run([_bash(), "-c", hooks["SessionStart"][-1]["hooks"][0]["command"]], input="",
                                capture_output=True, text=True, encoding="utf-8")
         self.assertIn("hookSpecificOutput", start.stdout)
         note = kb / "概念" / "幂等.md"
         note.write_text("# 幂等\n\n> 类型: 概念\n> 状态: 学习中\n> 更新: 2026-01-05\n\n## 一句话\n做一次和做十次一样。\n",
                         encoding="utf-8")
-        edit = subprocess.run(["bash", "-c", hooks["PostToolUse"][-1]["hooks"][0]["command"]],
+        edit = subprocess.run([_bash(), "-c", hooks["PostToolUse"][-1]["hooks"][0]["command"]],
                               input=json.dumps({"tool_input": {"file_path": str(note)}}),
                               capture_output=True, text=True, encoding="utf-8")
         self.assertEqual(edit.returncode, 0)
