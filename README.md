@@ -14,7 +14,7 @@
 
 ## 十分钟上手
 
-需要：Python 3.10 或更新、git、[Claude Code](https://claude.com/claude-code)。网页生成用到一个 Python 库 `markdown`，第二条命令会装上它。
+需要：Python 3.10 或更新、git、[Claude Code](https://claude.com/claude-code)。网页生成用到一个 Python 库 `markdown`，第二条命令会装上它。macOS、Linux 上如果只有 `python3`，把命令里的 `python` 换成 `python3`。
 
 ```bash
 git clone https://github.com/banma05/learning-desk.git

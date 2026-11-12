@@ -11,6 +11,7 @@ import copy
 import difflib
 import importlib.util
 import json
+import os
 import re
 import shlex
 import shutil
@@ -86,6 +87,15 @@ def git_init(kb: Path) -> str | None:
                 '  git config --global user.email "你的邮箱"\n'
                 f"再在 {kb} 里运行：git add -A 和 git commit -m init")
     return None
+
+
+def build_page(kb: Path, python: str) -> str | None:
+    """Generate 学习台.html once. Returns what went wrong, or None."""
+    run = subprocess.run([python, str(kb / "工具" / "build.py")], capture_output=True)
+    if run.returncode == 0:
+        return None
+    output = (run.stderr or run.stdout).decode("utf-8", errors="replace").strip()
+    return output[-500:] or f"build.py 退出码 {run.returncode}"
 
 
 def is_knowledge_base(kb: Path) -> bool:
@@ -224,32 +234,53 @@ def _import_line(kb: PurePath) -> str:
 
 
 def write_with_backup(path: Path, text: str, now: datetime, dry_run: bool) -> None:
-    old = path.read_text(encoding="utf-8") if path.exists() else ""
+    """Write text (LF line ends) to path; a file that used CRLF keeps CRLF."""
+    old = _read_text(path)
     if old == text:
         return
     if dry_run:
         print(f"会修改 {path}：")
         print("".join(difflib.unified_diff(old.splitlines(keepends=True), text.splitlines(keepends=True))))
         return
+    crlf = path.exists() and b"\r\n" in path.read_bytes()
     if path.exists():
         shutil.copy2(path, path.with_name(f"{path.name}.bak-{now:%Y%m%d-%H%M%S}"))
     path.parent.mkdir(parents=True, exist_ok=True)
-    _write(path, text)
+    _write(path, text, "\r\n" if crlf else "\n")
 
 
-def _write(path: Path, text: str) -> None:
-    with path.open("w", encoding="utf-8", newline="\n") as fh:
+def _write(path: Path, text: str, newline: str = "\n") -> None:
+    with path.open("w", encoding="utf-8", newline=newline) as fh:
         fh.write(text)
 
 
+def _read_text(path: Path) -> str:
+    """A user's file as text with LF line ends; a UTF-8 BOM is dropped. Missing: empty."""
+    return path.read_text(encoding="utf-8-sig") if path.exists() else ""
+
+
 def _read_settings(claude_dir: Path) -> dict | None:
-    """settings.json as a dict ({} when missing); None when it cannot be read."""
-    path = claude_dir / "settings.json"
+    """settings.json as a dict ({} when missing); None when it cannot be read or has an unexpected shape."""
     try:
-        settings = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+        settings = json.loads(_read_text(claude_dir / "settings.json") or "{}")
     except ValueError:
         return None
-    return settings if isinstance(settings, dict) else None
+    return settings if _well_formed(settings) else None
+
+
+def _well_formed(settings) -> bool:
+    """The parts this script edits have the shape Claude Code uses."""
+    if not isinstance(settings, dict):
+        return False
+    hooks, permissions = settings.get("hooks", {}), settings.get("permissions", {})
+    if not isinstance(hooks, dict) or not isinstance(permissions, dict):
+        return False
+    for groups in hooks.values():
+        if not isinstance(groups, list) or not all(
+                isinstance(g, dict) and isinstance(g.get("hooks", []), list)
+                and all(isinstance(h, dict) for h in g.get("hooks", [])) for g in groups):
+            return False
+    return all(isinstance(permissions.get(key, []), list) for key in ("allow", "additionalDirectories"))
 
 
 def _change_settings(claude_dir: Path, change, now: datetime, dry_run: bool, snippet: bool = True) -> bool:
@@ -273,7 +304,7 @@ def _change_settings(claude_dir: Path, change, now: datetime, dry_run: bool, sni
 
 def _change_claude_md(claude_dir: Path, change, now: datetime, dry_run: bool) -> bool:
     path = claude_dir / "CLAUDE.md"
-    old = path.read_text(encoding="utf-8") if path.exists() else ""
+    old = _read_text(path)
     new = change(old)
     write_with_backup(path, new, now, dry_run)
     return new != old
@@ -281,11 +312,20 @@ def _change_claude_md(claude_dir: Path, change, now: datetime, dry_run: bool) ->
 
 # ---- command line ----
 
+def default_claude_dir() -> Path:
+    """Where Claude Code keeps settings.json and CLAUDE.md: $CLAUDE_CONFIG_DIR, else ~/.claude."""
+    configured = os.environ.get("CLAUDE_CONFIG_DIR")
+    return Path(configured).expanduser() if configured else Path.home() / ".claude"
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
-    kb, now = args.kb.resolve(), datetime.now()
+    args.claude_dir = (args.claude_dir or default_claude_dir()).expanduser()
+    kb, now = args.kb.expanduser().resolve(), datetime.now()
     try:
         if args.update:
+            if kb == REPO or REPO in kb.parents:
+                raise InstallError(f"这是 learning-desk 仓库本身，不是知识库：{kb}")
             if args.dry_run:
                 print(f"会用 {TOOL} 替换 {kb / '工具'}，笔记和配置不动")
             else:
@@ -333,10 +373,12 @@ def _install(kb: Path, args, now: datetime) -> None:
             print(f"会新建知识库 {kb}（用途：{USE_LABELS[use]}），复制 模板/ 和 工具/，并做第一次 git 提交")
         else:
             scaffold(kb, use)
+            problem = build_page(kb, python)  # before the first commit, so the page is in it
+            if problem:
+                print(f"第一次生成网页没成功，先把知识库建好了。原因：{problem}")
             hint = git_init(kb)
             if hint:
                 print(hint)
-            subprocess.run([python, str(kb / "工具" / "build.py")], capture_output=True)
     _change_settings(args.claude_dir, lambda s: reconnect(s, kb, python), now, args.dry_run)
     _change_claude_md(args.claude_dir, lambda t: add_import(t, kb), now, args.dry_run)
     if not args.dry_run and not existing:
@@ -369,7 +411,8 @@ def _parser() -> argparse.ArgumentParser:
     mode.add_argument("--update", action="store_true", help="用仓库里新的 工具/ 替换知识库里的，不动笔记")
     parser.add_argument("--use", choices=sorted(USES), help="study=自学，work=工作上手、了解项目；不给就问")
     parser.add_argument("--dry-run", action="store_true", help="只打印会改什么，什么都不写")
-    parser.add_argument("--claude-dir", type=Path, default=Path.home() / ".claude", help="Claude Code 设置目录")
+    parser.add_argument("--claude-dir", type=Path, default=None,
+                        help="Claude Code 设置目录，默认 $CLAUDE_CONFIG_DIR，没有就是 ~/.claude")
     return parser
 
 

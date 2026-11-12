@@ -2,6 +2,7 @@ import contextlib
 import io
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -272,7 +273,86 @@ class InstallTest(unittest.TestCase):
         install.write_with_backup(path, "new", NOW, dry_run=False)
         self.assertEqual((self.base / "a.json.bak-20260105-093000").read_text(encoding="utf-8"), "same")
 
+    def test_settings_with_bom_is_read(self):
+        (self.claude / "settings.json").write_text('﻿{"model": "x"}', encoding="utf-8")
+        rc, out = self._install(self.base / "kb")
+        self.assertEqual(rc, 0)
+        self.assertNotIn("读不出来", out)
+        self.assertEqual(self._settings()["model"], "x")
+
+    def test_crlf_files_keep_crlf(self):
+        (self.claude / "CLAUDE.md").write_bytes(b"# mine\r\nrule\r\n")
+        (self.claude / "settings.json").write_bytes(b'{\r\n  "model": "x"\r\n}\r\n')
+        self._install(self.base / "kb")
+        for name in ("CLAUDE.md", "settings.json"):
+            data = (self.claude / name).read_bytes()
+            self.assertEqual(data.count(b"\n"), data.count(b"\r\n"), name)
+
+    def test_tilde_is_expanded(self):
+        with mock.patch.dict(os.environ, {"HOME": str(self.base), "USERPROFILE": str(self.base)}):
+            rc, _ = self._run("~/kb", "--use", "study", "--claude-dir", str(self.claude))
+        self.assertEqual(rc, 0)
+        self.assertTrue((self.base / "kb" / "维护约定.md").exists())
+
+    def test_default_claude_dir_follows_claude_config_dir(self):
+        with mock.patch.dict(os.environ, {"CLAUDE_CONFIG_DIR": str(self.claude)}):
+            self.assertEqual(install.default_claude_dir(), self.claude)
+        env = {k: v for k, v in os.environ.items() if k != "CLAUDE_CONFIG_DIR"}
+        with mock.patch.dict(os.environ, env, clear=True):
+            self.assertEqual(install.default_claude_dir(), Path.home() / ".claude")
+
+    def test_wrongly_shaped_settings_are_left_alone(self):
+        (self.claude / "settings.json").write_text('{"hooks": null}', encoding="utf-8")
+        rc, out = self._install(self.base / "kb")
+        self.assertEqual(rc, 0)
+        self.assertEqual((self.claude / "settings.json").read_text(encoding="utf-8"), '{"hooks": null}')
+        self.assertIn('"SessionStart"', out)
+
+    def test_first_commit_includes_the_page(self):
+        kb = self.base / "kb"
+        self._install(kb)
+        files = subprocess.run(["git", "-C", str(kb), "-c", "core.quotepath=off", "ls-tree", "-r", "--name-only", "HEAD"],
+                               capture_output=True,
+                               text=True, encoding="utf-8").stdout.split("\n")
+        self.assertIn("学习台.html", files)
+        status = subprocess.run(["git", "-C", str(kb), "status", "--porcelain"], capture_output=True, text=True).stdout
+        self.assertEqual(status.strip(), "")
+
+    def test_failed_first_build_is_reported(self):
+        with mock.patch.object(install, "build_page", return_value="boom: 生成失败的原因"):
+            rc, out = self._install(self.base / "kb")
+        self.assertEqual(rc, 0)
+        self.assertIn("boom: 生成失败的原因", out)
+
+    @unittest.skipUnless(shutil.which("bash"), "needs bash")
+    def test_hook_commands_run_in_a_real_shell(self):
+        kb = self.base / "我的 笔记"
+        self._install(kb)
+        hooks = self._settings()["hooks"]
+        start = subprocess.run(["bash", "-c", hooks["SessionStart"][-1]["hooks"][0]["command"]], input="",
+                               capture_output=True, text=True, encoding="utf-8")
+        self.assertIn("hookSpecificOutput", start.stdout)
+        note = kb / "概念" / "幂等.md"
+        note.write_text("# 幂等\n\n> 类型: 概念\n> 状态: 学习中\n> 更新: 2026-01-05\n\n## 一句话\n做一次和做十次一样。\n",
+                        encoding="utf-8")
+        edit = subprocess.run(["bash", "-c", hooks["PostToolUse"][-1]["hooks"][0]["command"]],
+                              input=json.dumps({"tool_input": {"file_path": str(note)}}),
+                              capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(edit.returncode, 0)
+        log = subprocess.run(["git", "-C", str(kb), "log", "-1", "--format=%s"], capture_output=True, text=True,
+                             encoding="utf-8").stdout.strip()
+        self.assertEqual(log, "auto: 幂等.md")
+
     # ---- update ----
+
+    def test_update_refuses_the_repo_itself(self):
+        # a throwaway copy stands in for the repo, so a missing guard can only hurt the copy
+        fake_repo = self.base / "repo"
+        shutil.copytree(install.TOOL, fake_repo / "工具", ignore=shutil.ignore_patterns("__pycache__", "tests"))
+        with mock.patch.object(install, "REPO", fake_repo), mock.patch.object(install, "TOOL", fake_repo / "工具"):
+            rc, out = self._run("--update", str(fake_repo))
+        self.assertEqual(rc, 1)
+        self.assertTrue((fake_repo / "工具" / "build.py").exists())
 
     def test_update_replaces_tool_keeps_notes_and_logs(self):
         kb = self.base / "kb"

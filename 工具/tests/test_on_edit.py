@@ -92,7 +92,7 @@ class OnEditTest(unittest.TestCase):
         repo = self._tmp_repo()
         (repo / "a.md").write_text("x", encoding="utf-8")
         self.assertIsNone(commit_all(repo, "auto: a.md"))
-        log = subprocess.run(["git", "-C", str(repo), "log", "--format=%s", "-1"], capture_output=True, text=True).stdout
+        log = subprocess.run(["git", "-C", str(repo), "log", "--format=%s", "-1"], capture_output=True, text=True, encoding="utf-8").stdout
         self.assertEqual(log.strip(), "auto: a.md")
         self.assertIsNone(commit_all(repo, "auto: nothing"))
 
@@ -104,7 +104,7 @@ class OnEditTest(unittest.TestCase):
             rc = main('{"tool_input": {"file_path": "%s"}}' % (root / "问题.md").as_posix())
             self.assertEqual(rc, 0)
             self.assertTrue((root / "学习台.html").exists())
-            log = subprocess.run(["git", "-C", str(root), "log", "--format=%s", "-1"], capture_output=True, text=True).stdout
+            log = subprocess.run(["git", "-C", str(root), "log", "--format=%s", "-1"], capture_output=True, text=True, encoding="utf-8").stdout
             self.assertEqual(log.strip(), "auto: 问题.md")
             self.assertEqual(main("not json"), 0)
         self.assertIn("not json", (root / "工具" / "hook.log").read_text(encoding="utf-8"))
