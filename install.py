@@ -9,6 +9,7 @@ Claude Code's settings.json and CLAUDE.md are backed up before every change.
 import argparse
 import copy
 import difflib
+import importlib.util
 import json
 import re
 import shlex
@@ -319,6 +320,8 @@ def _install(kb: Path, args, now: datetime) -> None:
         raise InstallError(f"知识库不要放在这个仓库里面（{REPO}），换一个文件夹，免得笔记被一起推上去")
     if "#" in str(kb):
         raise InstallError(f"知识库路径里不能有 #，Claude Code 读不到这样的路径：{kb}")
+    if importlib.util.find_spec("markdown") is None:
+        raise InstallError(f"缺少 Python 库 markdown，先运行：{_display(sys.executable)} -m pip install markdown")
     python, existing = sys.executable, is_knowledge_base(kb)
     if not existing and kb.exists() and any(kb.iterdir()):
         raise InstallError(f"目标文件夹不是空的：{kb}")
@@ -341,6 +344,10 @@ def _install(kb: Path, args, now: datetime) -> None:
               f"- 双击 {kb / '学习台.html'} 看网页\n"
               f"- 新开一个 Claude Code 会话，先请 Claude 帮你填好 {RULES_FILE} 第一节\"我是谁\"\n"
               "- 以后在任何项目里和 Claude 聊，它都会按约定把学到的东西记进来")
+
+
+def _display(path: str) -> str:
+    return f'"{path}"' if " " in path else path
 
 
 def _ask_use() -> str:

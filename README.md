@@ -14,10 +14,11 @@
 
 ## 十分钟上手
 
-需要：Python 3.10 或更新、git、[Claude Code](https://claude.com/claude-code)。
+需要：Python 3.10 或更新、git、[Claude Code](https://claude.com/claude-code)。网页生成用到一个 Python 库 `markdown`，第二条命令会装上它。
 
 ```bash
 git clone https://github.com/banma05/learning-desk.git
+python -m pip install -r learning-desk/requirements.txt
 python learning-desk/install.py D:/我的知识库
 ```
 

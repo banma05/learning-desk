@@ -182,6 +182,15 @@ class InstallTest(unittest.TestCase):
         self.assertEqual(text, "@/home/u/我的\\ 笔记/维护约定.md\n")
         self.assertEqual(install.remove_import(text, kb), "")
 
+    def test_stops_early_when_markdown_is_missing(self):
+        kb = self.base / "kb"
+        with mock.patch.object(install.importlib.util, "find_spec", return_value=None):
+            rc, out = self._install(kb)
+        self.assertEqual(rc, 1)
+        self.assertIn("pip install markdown", out)
+        self.assertFalse(kb.exists())
+        self.assertEqual(list(self.claude.iterdir()), [])
+
     def test_refuses_path_with_hash(self):
         rc, out = self._install(self.base / "a#b")
         self.assertEqual(rc, 1)

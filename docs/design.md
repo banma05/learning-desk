@@ -42,7 +42,7 @@
 
 ## 三、约束
 
-- Python ≥ 3.10，只用标准库（原版用到了 `X | None` 写法和海象运算符，所以不能更低）。作者本机只有 3.15，3.10 上的验证交给 GitHub Actions【Claude 的判断】。
+- Python ≥ 3.10（原版用到了 `X | None` 写法和海象运算符，所以不能更低）。除标准库外只依赖一个 `markdown` 库（原版就用它渲染 Markdown），写在 `requirements.txt` 里。作者本机只有 3.15，3.10 上的验证交给 GitHub Actions【Claude 的判断】。
 - 生成的网页完全离线，不引用任何外部资源（CDN、字体、统计脚本）。
 - Windows、macOS、Linux 都能用：代码里不写死路径，安装脚本用 Python 写。
 - 所有文本文件 UTF-8、LF 行尾。
