@@ -1,0 +1,4 @@
+*.tmp
+工具/hook.log
+工具/hook-status.json
+__pycache__/

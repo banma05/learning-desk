@@ -1,0 +1,2911 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>学习台</title><style>
+:root{--bg:#f4f5f7;--panel:#fff;--panel-2:#f8f9fb;--text:#1d2129;--text-2:#4e5969;--muted:#86909c;
+--line:#e5e6eb;--accent:#3370ff;--accent-soft:#e8efff;--ok:#00b42a;--ok-soft:#e8ffea;--doing:#ff7d00;
+--doing-soft:#fff3e8;--idle:#86909c;--idle-soft:#f2f3f5;--warn-bg:#fff7e8;--warn-line:#ffcf8b;
+--warn-text:#ad4e00;--shadow:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);--radius:10px}
+@media (prefers-color-scheme:dark){:root{--bg:#141518;--panel:#1d1e22;--panel-2:#232429;--text:#e8e9eb;
+--text-2:#b8bcc4;--muted:#80858f;--line:#2e3036;--accent:#6b96ff;--accent-soft:#1f2a45;--ok:#3cd17a;
+--ok-soft:#173326;--doing:#ffa047;--doing-soft:#3a2a17;--idle:#8b909a;--idle-soft:#2a2c31;--warn-bg:#33270f;
+--warn-line:#6b4f1d;--warn-text:#ffcf8b;--shadow:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);display:flex;
+font:15px/1.75 -apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+.muted{color:var(--muted);font-size:13px}
+/* sidebar */
+body>nav{width:220px;height:100vh;position:sticky;top:0;flex-shrink:0;display:flex;flex-direction:column;
+background:var(--panel);border-right:1px solid var(--line);padding:20px 12px}
+.brand{padding:0 10px 18px;margin-bottom:10px;border-bottom:1px solid var(--line)}
+.brand-name{font-size:20px;font-weight:700;letter-spacing:.5px}
+.brand-sub{font-size:12px;color:var(--muted)}
+.nav-links{flex:1}
+.nav-links a{display:flex;align-items:center;gap:10px;padding:9px 12px;margin:2px 0;border-radius:8px;color:var(--text-2)}
+.nav-links a:hover{background:var(--panel-2);text-decoration:none}
+.nav-links a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.nav-icon{width:20px;text-align:center} .nav-name{flex:1}
+.nav-links .count{font-size:12px;color:var(--muted);background:var(--panel-2);padding:0 8px;border-radius:10px}
+.nav-links a.active .count{background:var(--panel);color:var(--accent)}
+.nav-foot{font-size:11px;color:var(--muted);padding:10px 12px 0;border-top:1px solid var(--line)}
+/* main */
+main{flex:1;min-width:0;padding:28px 40px 40px;max-width:1240px}
+.sec,.doc{display:none} .sec.show,.doc.show{display:block;animation:fade .15s ease-out}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.page-head{margin-bottom:18px} .page-head h1{margin:0;font-size:26px;letter-spacing:.5px}
+.page-sub{margin:4px 0 0;color:var(--muted);font-size:14px}
+h2{font-size:18px;margin:22px 0 10px} h3{font-size:15px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;box-shadow:var(--shadow)}
+.intro{color:var(--text-2);font-size:14px} .intro:empty{display:none}
+.intro blockquote{margin:0 0 12px}
+.warn{background:var(--warn-bg);border:1px solid var(--warn-line);color:var(--warn-text);padding:8px 14px;
+border-radius:8px;margin-bottom:18px;font-size:14px} .warn summary{cursor:pointer;font-weight:600}
+.warn ul{margin:6px 0 2px;padding-left:20px}
+/* chips and badges */
+.chip{display:inline-block;padding:0 9px;border-radius:999px;font-size:12px;line-height:20px;white-space:nowrap;
+background:var(--idle-soft);color:var(--text-2)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)} .chip.doing{background:var(--doing-soft);color:var(--doing)}
+.chip.idle{background:var(--idle-soft);color:var(--idle)} .chip.blue{background:var(--accent-soft);color:var(--accent)}
+.chip.purple{background:rgba(114,46,209,.12);color:#8e5cd9} .chip.teal{background:rgba(20,201,201,.12);color:#0fa3a3}
+.chip.orange{background:var(--doing-soft);color:var(--doing)} .chip.red{background:rgba(245,63,63,.1);color:#e5484d}
+.badge{font-size:12px;color:var(--text-2);background:var(--panel-2);padding:0 8px;border-radius:10px;white-space:nowrap}
+/* project */
+.proj-switch{margin:0 0 14px;display:flex;gap:8px}
+.proj-tab{padding:5px 16px;border:1px solid var(--line);border-radius:999px;background:var(--panel);
+color:var(--text-2);cursor:pointer;font:inherit;font-size:14px}
+.proj-tab:hover{border-color:var(--accent);color:var(--accent)}
+.proj-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.proj-pane{display:none} .proj-pane.show{display:block}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);
+display:block;color:inherit;text-decoration:none;cursor:pointer;transition:border-color .15s,transform .15s}
+.stat:hover{border-color:var(--accent);transform:translateY(-1px)}
+.refs{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:-4px 0 16px}
+.refs-label{font-size:12px;color:var(--muted);margin-right:2px}
+.ref-link{font-size:13px;padding:4px 10px;border-radius:14px;background:var(--panel-2);border:1px solid var(--line);color:var(--text-2);text-decoration:none}
+.ref-link:hover{border-color:var(--accent);color:var(--accent)}
+.stat-name{font-weight:600} .stat-sub{font-size:12px;color:var(--muted);margin-top:-2px}
+.stat-num{font-size:24px;font-weight:700;margin:6px 0 8px;font-variant-numeric:tabular-nums}
+.stat-pct{font-size:13px;font-weight:400;color:var(--muted);margin-left:8px}
+.stat.none .stat-num{color:var(--muted)}
+.bar-track{display:block;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar-fill{display:block;height:100%;background:var(--accent);border-radius:3px}
+.stat.full .bar-fill{background:var(--ok)} .stat.low .bar-fill{background:var(--doing)}
+/* concepts */
+.concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.concept{display:block;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+padding:14px 16px;color:var(--text);box-shadow:var(--shadow);transition:border-color .15s,transform .15s}
+.concept:hover{border-color:var(--accent);transform:translateY(-1px);text-decoration:none}
+.concept-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.concept-name{font-weight:600;font-size:15px}
+.concept-meta{margin-top:8px;font-size:13px;color:var(--text-2);display:flex;justify-content:space-between}
+.concept-refs{color:var(--muted)}
+/* plans */
+.plan-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;align-items:start}
+.route h1{display:none} .route h2{font-size:16px;margin:18px 0 6px} .route h3{margin:14px 0 4px}
+.route>p:first-of-type,.route blockquote{font-size:13px}
+.days h2{margin-top:0}
+.plan-side{display:flex;flex-direction:column;gap:20px;min-width:0} .overview h1{display:block;font-size:18px;margin:0 0 8px}
+.day{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);margin:8px 0;box-shadow:var(--shadow)}
+.day summary{cursor:pointer;padding:10px 14px;display:flex;align-items:center;gap:10px;list-style:none}
+.day summary::-webkit-details-marker{display:none}
+.day-title{flex:1;font-weight:600}
+.mini-track{width:60px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.mini-track .bar-fill{background:var(--ok)}
+.day-body{padding:0 16px 10px;border-top:1px solid var(--line)}
+.day-body li.done{color:var(--muted)}
+.day-body li li{font-size:13px;color:var(--muted)}
+.day-more{margin-top:10px;border-top:1px dashed var(--line)}
+.day .day-more summary{padding:8px 0 0;font-size:13px;color:var(--muted)}
+.day .day-more summary::before{content:"▸ "} .day .day-more[open] summary::before{content:"▾ "}
+.day-more-body{font-size:14px}
+/* tables */
+.filters{display:flex;gap:8px;margin:4px 0 12px}
+.filters select{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);font:inherit;font-size:13px}
+.table-wrap{overflow:auto;max-height:calc(100vh - 220px);background:var(--panel);border:1px solid var(--line);
+border-radius:var(--radius);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{position:sticky;top:0;z-index:1;background:var(--panel-2);color:var(--text-2);font-weight:600;font-size:13px;
+text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.6}
+tbody tr:nth-child(even){background:var(--panel-2)} tbody tr:hover{background:var(--accent-soft)}
+tbody tr:last-child td{border-bottom:none}
+td.nowrap{white-space:nowrap}
+#outputs,#work{min-width:960px}
+/* questions */
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.column{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:10px}
+.column h3{margin:2px 4px 10px;display:flex;align-items:center;gap:8px}
+.col-count{font-size:12px;font-weight:400;color:var(--muted);background:var(--panel);padding:0 8px;border-radius:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;
+padding:8px 12px;margin:8px 0;box-shadow:var(--shadow);font-size:14px}
+.col-1 .card{border-left-color:var(--doing)} .col-2 .card{border-left-color:#8e5cd9}
+.card summary{cursor:pointer;list-style:none} .card summary::-webkit-details-marker{display:none}
+.card p{margin:8px 0 0}
+.qid{font-weight:700;color:var(--text-2);margin-right:4px;font-variant-numeric:tabular-nums}
+.solved{margin-top:20px} .solved>summary{cursor:pointer;font-weight:600;margin-bottom:10px}
+.solved-group{margin:0 0 10px 12px} .solved-group>summary{cursor:pointer;color:var(--text-2);margin-bottom:6px}
+/* note pages (reading layout in kg.css) */
+.doc h1{font-size:26px;margin:8px 0 4px} .doc h2{border-bottom:1px solid var(--line);padding-bottom:6px;margin-top:28px}
+.doc-body>p.muted{margin-top:0}
+.doc table{background:var(--panel);border:1px solid var(--line);border-radius:8px;display:block;overflow-x:auto}
+pre{background:var(--panel-2);border:1px solid var(--line);padding:12px 14px;border-radius:8px;overflow-x:auto;font-size:13px}
+code{font-family:"Cascadia Code",Consolas,monospace;font-size:.92em;background:var(--panel-2);padding:1px 5px;border-radius:4px}
+pre code{background:none;padding:0}
+blockquote{margin:10px 0;padding:8px 14px;border-left:3px solid var(--accent);background:var(--accent-soft);
+border-radius:0 8px 8px 0;color:var(--text-2)}
+blockquote p{margin:4px 0}
+.doc img,.route img{max-width:100%;background:#fff;border:1px solid var(--line);border-radius:8px;margin:8px 0;cursor:zoom-in}
+a.broken{color:#e5484d;text-decoration:line-through}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9;overflow:auto;cursor:zoom-out;padding:24px}
+#overlay.show{display:block} #overlay img{max-width:100%;background:#fff;display:block;margin:auto;border-radius:8px}
+footer{margin-top:40px;color:var(--muted);font-size:12px}
+@media (max-width:1000px){.plan-grid,.board{grid-template-columns:1fr}}
+/* knowledge graph, reading page and search: base layout; later tasks style the parts they fill */
+.nav-search{padding:0 2px 12px}
+#search{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);
+color:var(--text);font:inherit;font-size:13px}
+#search:focus{outline:none;border-color:var(--accent)}
+/* results float over the page next to the nav; the active row is the one Enter opens */
+.nav-search{position:relative}
+body>nav{z-index:20}
+#search-results{display:none;position:absolute;z-index:30;left:2px;top:100%;width:min(420px,calc(100vw - 240px));
+max-height:70vh;overflow:auto;margin-top:-6px;background:var(--panel);border:1px solid var(--line);
+border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.14);padding:4px 0}
+#search-results.show{display:block}
+.sr-group{padding:6px 12px 2px;font-size:12px;color:var(--muted)}
+.sr-item{display:flex;flex-direction:column;gap:1px;padding:5px 12px;cursor:pointer;font-size:13px;line-height:1.5}
+.sr-item.active{background:var(--accent-soft)}
+.sr-t{color:var(--text);overflow-wrap:anywhere}
+.sr-s{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.sr-item mark{background:transparent;color:var(--accent);font-weight:600}
+.sr-empty{padding:10px 12px;font-size:13px;color:var(--muted)}
+.search-flash{animation:search-flash 1.5s ease-out}
+.point-flash{animation:search-flash 2s ease-out;border-radius:4px}
+@keyframes search-flash{0%,40%{background:var(--accent-soft);box-shadow:0 0 0 4px var(--accent-soft)}100%{background:transparent;box-shadow:0 0 0 4px transparent}}
+.doc-body [id*="-hit-"]{scroll-margin-top:16px}
+.stat-mastery{font-size:12px;color:var(--text-2);margin-top:8px}
+/* entry page: tree + graph */
+.kg{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;align-items:start}
+.kg-tree,.kg-stage{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.kg-tree{position:sticky;top:20px;max-height:calc(100vh - 40px);overflow:auto;padding:10px 12px}
+.kg-stage{position:relative;height:calc(100vh - 260px);min-height:600px;overflow:hidden}
+.kg-svg{display:block;width:100%;height:100%}
+/* stage = bar / svg / footer: the svg is the only drawing area, nothing sits on top of it */
+.kg-stage{display:flex;flex-direction:column;background:linear-gradient(180deg,var(--panel),var(--panel-2))}
+.kg-stage .kg-svg{flex:1;min-height:0;height:auto}
+/* dots: --h is the block colour, set per node */
+.kg-full{fill:var(--h);stroke:var(--h)}
+.kg-ring{fill:var(--panel);stroke:var(--h)}
+.kg-half{fill:var(--h)}
+.kg-dash{stroke-dasharray:3 2.5}
+.kg-ic{flex:none;overflow:visible;vertical-align:middle}
+/* tree */
+.kg-tree{font-size:13px;line-height:1.5}
+.kg-tree ul{list-style:none;margin:0;padding-left:14px}
+.kg-tree>ul{padding-left:0}
+.kg-tree li.closed>ul{display:none}
+.kg-row{display:flex;align-items:center;gap:6px;padding:3px 6px;border-radius:6px;cursor:pointer;color:var(--text)}
+.kg-row:hover{background:var(--panel-2)}
+.kg-row.anc{color:var(--accent)}
+.kg-row.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.kg-tw{width:12px;flex:none;color:var(--muted);font-size:10px;text-align:center}
+.kg-has>.kg-row .kg-tw::before{content:"▾"}
+.kg-has.closed>.kg-row .kg-tw::before{content:"▸"}
+.kg-row .kg-ic{align-self:flex-start;margin-top:5px}
+.kg-name{flex:1;min-width:0}
+.kg-measure{font-size:11px;font-weight:400;color:var(--muted)}
+/* graph bar: back button, crumb, "要先懂" toggle */
+.kg-bar{flex:none;display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:13px;white-space:nowrap}
+.kg-back{flex:none;white-space:nowrap;background:var(--panel);color:var(--text-2);border:1px solid var(--line);border-radius:8px;padding:3px 12px;
+cursor:pointer;font:inherit;font-size:13px;box-shadow:var(--shadow)}
+.kg-back:hover{border-color:var(--accent);color:var(--accent)}
+.kg-back[disabled]{opacity:.4;cursor:default;border-color:var(--line);color:var(--text-2)}
+.kg-crumb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-2)}
+.kg-crumb .sep{color:var(--muted);margin:0 6px}
+.kg-crumb .kg-more{color:var(--muted)}
+.kg-pre-toggle{flex:none;font-size:12px;color:var(--text-2);cursor:pointer;user-select:none}
+/* graph */
+.kg-svg{cursor:grab;touch-action:none;user-select:none}
+.kg-svg.kg-grabbing{cursor:grabbing}
+.kg-link{fill:none;stroke:var(--muted);stroke-opacity:.45;stroke-width:1.2;transition:opacity .15s}
+.kg-link.c1{stroke-width:2}
+.kg-link.c2{stroke-opacity:.35}
+.kg-link.up{stroke-dasharray:3 5}
+.kg-pre path{fill:none;stroke:#f08a24;stroke-width:1.6;stroke-dasharray:5 4;opacity:0;transition:opacity .15s;pointer-events:none}
+.kg.pre-on .kg-pre path,.kg-pre path.kg-on{opacity:.9}
+.kg-arrow{fill:#f08a24}
+.kg-node{cursor:pointer;transition:opacity .35s}
+.kg-node .kg-body{transition:filter .2s}
+.kg-node:hover .kg-body{filter:drop-shadow(0 3px 6px rgba(51,112,255,.35))}
+.kg-node.kg-picked .kg-body{filter:drop-shadow(0 0 5px var(--h))}
+.kg-halo{fill:var(--h);opacity:.16}
+.kg-ghost{opacity:.55}
+.kg-ghost .kg-ring{stroke:var(--muted)}
+.kg-node.kg-in,.kg-node.kg-out{opacity:0}
+.kg-node.kg-out{pointer-events:none}
+.kg-svg .kg-faded{opacity:.18}
+.kg-lbl{fill:var(--text);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--panel);
+stroke-width:4px;stroke-linejoin:round}
+.kg-l0 .kg-lbl{font-size:calc(16px * var(--lz,1));font-weight:600}
+.kg-l1 .kg-lbl{font-size:calc(13.5px * var(--lz,1));font-weight:600}
+.kg-l2 .kg-lbl{font-size:calc(11px * var(--lz,1));fill:var(--text-2)}
+.kg-lup .kg-lbl{font-size:calc(12px * var(--lz,1));fill:var(--muted)}
+/* footer under the graph: card (fixed height, scrolls) and legend */
+.kg-foot{flex:none;height:116px;display:flex;flex-direction:column;gap:4px;padding:6px 12px 8px;
+border-top:1px solid var(--line)}
+.kg-card{position:relative;flex:1;min-height:0;overflow:auto;padding:2px 26px 2px 2px;font-size:13px;line-height:1.6}
+.kg-card-hint{color:var(--muted);font-size:12px}
+.kg-card-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px}
+.kg-card-line{color:var(--text-2);margin-top:4px}
+.kg-card-sum{margin:6px 0 0}
+.kg-card-x{position:absolute;top:4px;right:6px;border:0;background:none;color:var(--muted);font-size:16px;
+cursor:pointer;line-height:1}
+.kg-read{display:inline-block;margin-top:8px;font-weight:600}
+.kg-legend{flex:none;display:flex;flex-wrap:wrap;gap:2px 12px;font-size:11.5px;color:var(--muted)}
+.kg-legend span{display:inline-flex;align-items:center;gap:4px}
+/* reading page */
+.doc-top{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;margin-bottom:6px;font-size:14px}
+.crumb{color:var(--muted);font-size:13px}
+.doc-grid{display:grid;grid-template-columns:minmax(0,860px) 240px;gap:32px;align-items:start}
+.doc-side{position:sticky;top:20px;max-height:calc(100vh - 40px);overflow:auto;font-size:13px}
+.side-title{font-weight:600;color:var(--text-2);margin:12px 0 4px}
+.side-toc a{display:block;padding:2px 0 2px 10px;color:var(--text-2);border-left:2px solid var(--line)}
+.side-toc a.toc-3{padding-left:22px}
+.side-refs ul{margin:0;padding-left:18px}
+.crumb a{color:var(--text-2)} .crumb a:hover{color:var(--accent)} .crumb b{color:var(--text)}
+.crumb .sep{color:var(--muted);margin:0 6px}
+.crumb-also{color:var(--muted);font-size:12px;margin:-2px 0 8px}.crumb-also:empty{display:none}
+.crumb-also a{color:var(--text-2)} .crumb-also a:hover{color:var(--accent)} .crumb-also .sep{margin:0 4px}
+.doc-status{display:inline-flex;align-items:center;gap:8px;margin-left:auto}
+.doc-mastery{font-size:12px;color:var(--text-2)}
+.status-buttons:empty{display:none}
+/* status buttons: a small segmented group; the pressed one is the current status */
+.status-buttons{display:inline-flex;align-items:center;flex:none;border:1px solid var(--line);border-radius:999px;
+overflow:hidden;background:var(--panel);font-size:11.5px;line-height:1}
+.status-buttons .sb{border:0;border-left:1px solid var(--line);background:none;color:var(--text-2);font:inherit;
+padding:3px 8px;cursor:pointer;white-space:nowrap}
+.status-buttons .sb:first-of-type{border-left:0}
+.status-buttons .sb:hover{color:var(--accent);background:var(--accent-soft)}
+.status-buttons .sb.on{background:var(--accent);color:#fff;cursor:default}
+.status-buttons.sb-copy .sb.on{background:var(--accent-soft);color:var(--accent);cursor:pointer}
+.kg-card-own{font-size:12px;color:var(--muted);margin-right:-4px}
+.sb-hint{padding:0 2px 0 8px;color:var(--muted);white-space:nowrap}
+.side-point{flex-wrap:wrap}
+.side-point .status-buttons{margin-left:18px}
+.status-toast{position:fixed;left:50%;bottom:24px;z-index:40;transform:translateX(-50%);max-width:min(560px,calc(100vw - 32px));
+padding:8px 16px;border-radius:8px;background:var(--text);color:var(--panel);font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.status-toast[hidden]{display:none}
+.status-toast-act{margin-left:12px;padding:0;border:0;background:none;color:inherit;font:inherit;font-weight:600;
+text-decoration:underline;cursor:pointer}
+.kg-writing .status-buttons{opacity:.55;cursor:progress}
+.kg-writing .status-buttons .sb{cursor:progress}
+.doc-body h2[id],.doc-body h3[id]{scroll-margin-top:16px}
+.side-toc a:hover{color:var(--accent);text-decoration:none}
+.side-toc a.on{color:var(--accent);border-left-color:var(--accent);font-weight:600}
+.side-point{display:flex;align-items:center;gap:6px;padding:2px 0}
+.side-point-name{flex:1;min-width:0;color:var(--text)}
+.side-point-name:hover{color:var(--accent)}
+/* mini graph: same dots as the big graph; orange dashed = 要先懂 */
+.mini-svg{display:block;max-width:100%;height:auto;overflow:visible}
+.mini-dot{cursor:pointer} .mini-self{cursor:default} .mini-parent{opacity:.6}
+.mini-dot:not(.mini-self):hover .kg-body{filter:drop-shadow(0 2px 4px rgba(51,112,255,.4))}
+.mini-lbl{font-size:11px;fill:var(--text-2);text-anchor:middle;paint-order:stroke;stroke:var(--bg);stroke-width:3px;
+stroke-linejoin:round}
+.mini-self .mini-lbl{font-size:12px;font-weight:600;fill:var(--text)}
+.mini-up{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:3 4}
+.mini-pre{stroke:#f08a24;stroke-width:1.4;stroke-dasharray:4 3}
+.mini-legend{font-size:11px;color:var(--muted)}
+.side-toggle{display:none;flex:none;padding:2px 12px;border:1px solid var(--line);border-radius:8px;
+background:var(--panel);color:var(--text-2);font:inherit;font-size:13px;cursor:pointer}
+.side-toggle:hover{border-color:var(--accent);color:var(--accent)}
+/* words in the text, their hover card and the peek panel */
+.doc-body .term{border-bottom:1px dashed var(--accent);cursor:pointer}
+.doc-body .term:hover{background:var(--accent-soft)}
+.term-tip{position:fixed;z-index:10;max-width:300px;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+box-shadow:0 6px 20px rgba(0,0,0,.14);padding:8px 12px;font-size:13px;line-height:1.6;pointer-events:none}
+.tip-head{display:flex;align-items:center;gap:8px}
+.tip-sum{margin-top:2px} .tip-src{color:var(--muted);font-size:12px;margin-top:4px}
+.tip-hint{color:var(--muted);font-size:11px;margin-top:4px}
+#peek{position:fixed;top:0;right:0;bottom:0;z-index:8;width:min(380px,100vw);overflow:auto;padding:18px 20px 24px;
+background:var(--panel);border-left:1px solid var(--line);box-shadow:-8px 0 24px rgba(0,0,0,.08);font-size:14px;
+animation:peek-in .2s ease-out}
+#peek[hidden]{display:none}
+@keyframes peek-in{from{transform:translateX(32px);opacity:0}to{transform:none;opacity:1}}
+.peek-x{position:absolute;top:12px;right:14px;border:0;background:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1}
+.peek-x:hover{color:var(--text)}
+.peek-kind{font-size:12px;color:var(--muted)}
+.peek-title{display:flex;align-items:center;gap:8px;margin:4px 28px 8px 0;font-size:18px}
+.peek-status{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.peek-sum{margin:8px 0;line-height:1.7}
+.peek-line{margin:6px 0;color:var(--text-2)}
+.peek-label{display:inline-block;margin-right:8px;font-size:12px;color:var(--muted)}
+.peek-points-title{display:block;margin-top:10px}
+.peek-points{list-style:none;margin:4px 0;padding:0}
+.peek-points li{display:flex;align-items:center;gap:6px;padding:2px 0}
+.peek-open{display:inline-block;margin-top:14px;font-weight:600}
+@media (max-width:1100px){
+.doc-grid{grid-template-columns:minmax(0,1fr)}
+.side-toggle{display:inline-block}
+.doc-side{display:none}
+.doc-side.open{display:block;position:fixed;top:16px;right:16px;z-index:7;width:min(300px,calc(100vw - 32px));
+max-height:calc(100vh - 32px);padding:4px 14px 12px;background:var(--panel);border:1px solid var(--line);
+border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.doc-side.open .mini-lbl{stroke:var(--panel)}
+}
+@media (max-width:1280px){.kg{grid-template-columns:220px minmax(0,1fr)}}
+@media (max-width:1000px){.kg{grid-template-columns:1fr}.kg-tree{position:static}}
+</style></head>
+<body><nav><div class="brand"><div class="brand-name">学习台</div><div class="brand-sub">个人知识库</div></div><div class="nav-search"><input id="search" type="search" placeholder="搜索知识点、笔记、表名…"><div id="search-results"></div></div><div class="nav-links"><a href="#项目" data-nav="项目"><span class="nav-icon">🗺️</span><span class="nav-name">项目</span><span class="count">4/7</span></a><a href="#概念" data-nav="概念"><span class="nav-icon">💡</span><span class="nav-name">概念</span><span class="count">3 张</span></a><a href="#计划" data-nav="计划"><span class="nav-icon">📅</span><span class="nav-name">计划</span><span class="count">3 天</span></a><a href="#工作" data-nav="工作"><span class="nav-icon">💼</span><span class="nav-name">工作</span><span class="count">1 条</span></a><a href="#成果" data-nav="成果"><span class="nav-icon">🏆</span><span class="nav-name">成果</span><span class="count">1 项</span></a><a href="#问题" data-nav="问题"><span class="nav-icon">❓</span><span class="nav-name">问题</span><span class="count">2 待解决</span></a></div><div class="nav-foot">更新于 2026-11-12 11:05</div></nav><main><section class="sec" id="sec-项目"><header class="page-head"><h1>项目</h1><p class="page-sub">每个项目一张地图：哪几块已经弄懂，哪几块还是空白。</p></header><div class="proj-switch"><button class="proj-tab" data-project="书店后台">书店后台</button><button class="proj-tab" data-project="概念">概念</button></div><div class="proj-pane" data-pane="书店后台"><div class="stats"><a class="stat full" href="#项目" data-block="书店后台/交易" title="在图谱里看这一块"><div class="stat-name">交易</div><div class="stat-num">3/3<span class="stat-pct">100%</span></div><div class="bar-track"><span class="bar-fill" style="width:100%"></span></div><div class="stat-mastery">已掌握 0/9</div></a><a class="stat mid" href="#项目" data-block="书店后台/履约" title="在图谱里看这一块"><div class="stat-name">履约</div><div class="stat-num">1/2<span class="stat-pct">50%</span></div><div class="bar-track"><span class="bar-fill" style="width:50%"></span></div><div class="stat-mastery">已掌握 0/1</div></a><a class="stat none" href="#项目" data-block="书店后台/后台" title="在图谱里看这一块"><div class="stat-name">后台</div><div class="stat-num">0/2<span class="stat-pct">0%</span></div><div class="bar-track"><span class="bar-fill" style="width:0%"></span></div><div class="stat-mastery">已掌握 0/0</div></a></div><div class="kg" data-graph="书店后台"><aside class="kg-tree"></aside><div class="kg-stage"><div class="kg-bar"></div><svg class="kg-svg"></svg><div class="kg-card"></div></div></div></div><div class="proj-pane" data-pane="概念"><div class="kg" data-graph="概念"><aside class="kg-tree"></aside><div class="kg-stage"><div class="kg-bar"></div><svg class="kg-svg"></svg><div class="kg-card"></div></div></div></div></section><section class="sec" id="sec-概念"><header class="page-head"><h1>概念</h1><p class="page-sub">跨项目通用的概念和方法，一张卡一个；主题笔记用到时链接过来。</p></header><div class="concept-grid"><a class="concept" href="#doc-7cb3e06ec4"><div class="concept-top"><span class="concept-name">先受理后回调</span><span class="chip purple">方法</span></div><div class="concept-meta">🔄 学习中<span class="concept-refs">被引用 3</span></div></a><a class="concept" href="#doc-4665348d39"><div class="concept-top"><span class="concept-name">幂等</span><span class="chip blue">概念</span></div><div class="concept-meta">🔄 学习中<span class="concept-refs">被引用 3</span></div></a><a class="concept" href="#doc-84a5871454"><div class="concept-top"><span class="concept-name">验签</span><span class="chip purple">方法</span></div><div class="concept-meta">🔄 学习中<span class="concept-refs">被引用 3</span></div></a></div></section><section class="sec" id="sec-计划"><header class="page-head"><h1>计划</h1><p class="page-sub">总计划定目标和每周进度，每天的计划跟着它排。</p></header><div class="plan-grid"><div class="plan-side"><div class="panel route overview"><h1>总计划</h1>
+<h2>一、目标</h2>
+<p>两周（01-05 至 01-16）后：</p>
+<ul>
+<li>书店后台交易这条线（下单、库存扣减、支付回调）讲得出来。衡量：对着<a href="#项目">骨架</a>用自己的话讲一遍，Claude 只指出漏的和错的。</li>
+<li>履约的发货读完。衡量：发货有自己的笔记，状态到"学习中"。</li>
+</ul>
+<h2>二、检查节点</h2>
+<ul>
+<li>01-09（第一周最后一天）：交易这条线读完一遍，发货开了头。</li>
+<li>01-16（第二周最后一天）：交易这条线自己讲一遍；发货读完。</li>
+</ul>
+<h2>三、进度表</h2>
+<p>每周一行；"周"写 <code>MM-DD 至 MM-DD</code>，和上一行相同写 <code>〃</code>。会话开始时，Claude 会读到这一周那一行。</p>
+<table>
+<thead>
+<tr>
+<th>周</th>
+<th>计划：交付</th>
+<th>计划：学习</th>
+<th>节点</th>
+<th>实际</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01-05 至 01-09</td>
+<td>书店后台地图</td>
+<td>交易：下单、库存扣减、支付回调；履约：发货开个头</td>
+<td>01-09：交易读完一遍</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>01-12 至 01-16</td>
+<td>—</td>
+<td>交易：自己讲一遍；履约：发货读完；后台：商品上架；退货、对账报表碰到再补</td>
+<td>01-16：交易讲一遍、发货读完</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>更新记录</h2>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>改了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-01-05</td>
+<td>建立总计划：两个目标、两个检查节点、两周进度表</td>
+</tr>
+</tbody>
+</table></div></div><div class="days"><h2>每日记录</h2><details class="day"><summary><span class="day-title">2026-01-07（第 3 天）</span><span class="badge">1/2 完成</span><span class="mini-track"><span class="bar-fill" style="width:50%"></span></span></summary><div class="day-body"><h2>今日计划</h2>
+<ul>
+<li>☐ 读完发货</li>
+<li class="done">☑ 把下单流程画成一张图</li>
+</ul>
+<h2>要点</h2>
+<ul>
+<li>发货看了一半，物流单号怎么回填还没看懂（<a href="#doc-eb64aac2bf">发货</a>，问题 T2）</li>
+<li>下单流程画成了一张图，记进<a href="#成果">成果</a></li>
+<li>验签的算法和换密钥周期还没有答案，要问老陈（问题 T1）</li>
+</ul>
+<h2>复盘</h2>
+<ul>
+<li>今日计划完成 1 / 2。</li>
+<li>发货只看了一半：卡在物流单号怎么回填。</li>
+<li>明天：先查清物流单号怎么回填（T2）、读完发货；找老陈问 T1。</li>
+</ul><details class="day-more"><summary>详细记录</summary><div class="day-more-body"><h2>做了什么</h2>
+<ul>
+<li>补写 01-06 的「搞懂了」「卡在哪里」「复盘」；按今天实际做的事写今日计划</li>
+<li>新建<a href="#doc-eb64aac2bf">发货</a>（只看过），骨架挂上；<a href="#doc-d48c872032">下单流程</a>第 5 步链到发货</li>
+<li>问题 T2：物流单号是怎么回填的</li>
+<li><a href="#成果">成果</a>加一行：下单流程图（示例里不附图片）</li>
+<li><a href="#工作">工作</a>加一行：接手书店后台（01-05 起）</li>
+<li>更新维护约定第五节「当前进度」</li>
+</ul>
+<h2>搞懂了</h2>
+<ul>
+<li>无新弄懂的点（今天主要在看发货，还没看懂）。</li>
+</ul>
+<h2>卡在哪里</h2>
+<ul>
+<li>发货：物流单号是怎么回填的（问题 T2）。</li>
+</ul></div></details></div></details><details class="day"><summary><span class="day-title">2026-01-06（第 2 天）</span><span class="badge">2/2 完成</span><span class="mini-track"><span class="bar-fill" style="width:100%"></span></span></summary><div class="day-body"><h2>今日计划</h2>
+<ul>
+<li class="done">☑ 读支付回调：为什么要做幂等</li>
+<li class="done">☑ 读回调里的验签 <code>verifySign</code></li>
+</ul>
+<h2>要点</h2>
+<ul>
+<li>支付回调要幂等：支付平台会重发通知，按支付单号查是否处理过、按"待支付"条件更新（<a href="#doc-d4e2b72719">支付回调</a>）</li>
+<li>验签防伪造：不验的话谁都能伪造"已支付"白拿书；密钥在配置里</li>
+<li>签名用哪种算法、密钥多久换一次，代码里看不出来，要问老陈（问题 T1）</li>
+<li>新写三张概念卡：<a href="#doc-4665348d39">幂等</a>、<a href="#doc-7cb3e06ec4">先受理后回调</a>、<a href="#doc-84a5871454">验签</a></li>
+</ul>
+<h2>复盘</h2>
+<ul>
+<li>今日计划完成 2 / 2。</li>
+<li>没有没完成的；验签留了一个要问老陈的问题（T1）。</li>
+<li>明天：交易这条线先告一段落，开始读履约的发货。</li>
+</ul><details class="day-more"><summary>详细记录</summary><div class="day-more-body"><h2>做了什么</h2>
+<ul>
+<li>补写 01-05 的「搞懂了」「卡在哪里」「复盘」，起草今日计划</li>
+<li><a href="#doc-d4e2b72719">支付回调</a>补「回调幂等」；新建概念卡<a href="#doc-4665348d39">幂等</a>、<a href="#doc-7cb3e06ec4">先受理后回调</a>；<a href="#doc-d48c872032">下单流程</a>的「用到的套路」链到先受理后回调</li>
+<li><a href="#doc-d4e2b72719">支付回调</a>补「回调验签」；新建概念卡<a href="#doc-84a5871454">验签</a>；问题 T1（问老陈：签名算法、密钥多久换一次）</li>
+</ul>
+<h2>搞懂了</h2>
+<ul>
+<li>回调为什么要幂等：支付平台没收到"成功"会重发，不幂等就会重复扣库存。讲的做法是先按支付单号查、再按"待支付"条件更新，更新到 0 行说明别人处理过了（还没对照代码）。</li>
+<li>验签为什么要做：确认通知真是支付平台发的、没被改过；不验的话谁都能伪造"已支付"。</li>
+</ul>
+<h2>卡在哪里</h2>
+<ul>
+<li>签名用哪种算法、密钥多久换一次，代码里看不出来，要问老陈（问题 T1）。</li>
+</ul></div></details></div></details><details class="day"><summary><span class="day-title">2026-01-05（第 1 天）</span><span class="badge">2/2 完成</span><span class="mini-track"><span class="bar-fill" style="width:100%"></span></span></summary><div class="day-body"><h2>今日计划</h2>
+<ul>
+<li class="done">☑ 搭书店后台的项目地图</li>
+<li class="done">☑ 读下单流程（<code>order-service</code>）</li>
+</ul>
+<h2>要点</h2>
+<ul>
+<li>书店后台的地图搭好：交易、履约、后台三组，退货、对账报表先留空白（<a href="#项目">骨架</a>）</li>
+<li>下单五步读完：下单 → 预占库存 → 付钱 → 支付回调 → 发货（<a href="#doc-d48c872032">下单流程</a>）</li>
+<li>库存先预占、30 分钟不付就释放，付了钱才真扣（<a href="#doc-c6cc27bce7">库存扣减</a>）</li>
+<li>定了两周的<a href="#计划">总计划</a></li>
+</ul>
+<h2>复盘</h2>
+<ul>
+<li>今日计划完成 2 / 2。</li>
+<li>没有没完成的。</li>
+<li>明天：接着读支付回调，弄清回调为什么要做幂等。</li>
+</ul><details class="day-more"><summary>详细记录</summary><div class="day-more-body"><h2>做了什么</h2>
+<ul>
+<li>新项目：建了<a href="#项目">书店后台骨架</a>，交易、履约、后台三组七块；退货、商品上架、对账报表还空着</li>
+<li>新建<a href="#计划">总计划</a>：两个目标、两个检查节点、两周进度表</li>
+<li>新建主题笔记<a href="#doc-d48c872032">下单流程</a>、<a href="#doc-c6cc27bce7">库存扣减</a>、<a href="#doc-d4e2b72719">支付回调</a>（先写回调做的事），骨架挂上这三篇</li>
+<li>问题 Q1（已解决）：为什么库存要先预占、不直接扣</li>
+</ul>
+<h2>搞懂了</h2>
+<ul>
+<li>下单分五步，像在餐馆点菜：下单（"待支付"）→ 预占库存 → 付钱 → 支付回调（"已支付"、预占变真扣）→ 发货。</li>
+<li>库存先预占、不直接扣：不付钱的人不会把库存占死；30 分钟不付，<code>ReleaseStockJob</code> 把预占还回去。</li>
+<li>下单用到两个套路：先受理后回调（支付平台事后通知）、补偿任务（定时释放预占）。</li>
+</ul>
+<h2>卡在哪里</h2>
+<ul>
+<li>无。</li>
+</ul></div></details></div></details></div></div></section><section class="sec" id="sec-工作"><header class="page-head"><h1>工作</h1><p class="page-sub">真实的工作：需求、排查、评审……以及从中学到的东西。</p></header><div class="intro"><p>真实的工作：需求、排查、评审……以及从中学到的东西。</p></div><div class="filters"><select data-table="work" data-filter="project"><option value="">全部项目</option><option value="书店后台">书店后台</option></select><select data-table="work" data-filter="type"><option value="">全部类型</option><option value="其他">其他</option></select></div><div class="table-wrap"><table id="work"><thead><tr><th>日期</th><th>项目</th><th>类型</th><th>事项</th><th>做了什么</th><th>结果</th><th>关联</th><th>收获</th></tr></thead><tbody><tr data-project="书店后台" data-type="其他"><td class="nowrap">2026-01-05</td><td class="nowrap">书店后台</td><td class="nowrap"><span class="chip ">其他</span></td><td>接手书店后台</td><td>01-05 搭项目地图、读下单流程；01-06 读支付回调的幂等和验签；01-07 发货看了一半，画了下单流程图</td><td>进行中：交易这条线读完一遍，发货还没读完</td><td><a href="#项目">骨架</a>、T1、T2</td><td>支付回调既要防重复通知（幂等），也要防伪造通知（验签）</td></tr></tbody></table></div></section><section class="sec" id="sec-成果"><header class="page-head"><h1>成果</h1><p class="page-sub">自己做过的东西：笔记、图、分析、数据……文件留在原处，这里只放入口。</p></header><div class="intro"><p>自己做过的东西：笔记、图、分析、数据……文件留在原处，这里只放入口。</p></div><div class="filters"><select data-table="outputs" data-filter="type"><option value="">全部类型</option><option value="图">图</option></select><select data-table="outputs" data-filter="owner"><option value="">全部所属</option><option value="书店后台/交易/下单">书店后台/交易/下单</option></select></div><div class="table-wrap"><table id="outputs"><thead><tr><th>日期</th><th>名称</th><th>类型</th><th>所属</th><th>状态</th><th>位置</th><th>说明</th></tr></thead><tbody><tr data-type="图" data-owner="书店后台/交易/下单"><td class="nowrap">2026-01-07</td><td>下单流程图</td><td class="nowrap"><span class="chip purple">图</span></td><td>书店后台/交易/下单</td><td class="nowrap"><span class="chip ok">完成</span></td><td class="nowrap"></td><td>小周自己画的图（示例里不附图片）：把下单五步画成一张图，下单 → 预占库存 → 付钱 → 支付回调 → 发货</td></tr></tbody></table></div></section><section class="sec" id="sec-问题"><header class="page-head"><h1>问题</h1><p class="page-sub">待解决的问题按该问谁分列。</p></header><div class="intro"><p>学习和工作中冒出来、一时答不上来的问题。解决了就把状态改成"已解决"并写上答案。</p></div><div class="board"><div class="column col-0"><h3>自己<span class="col-count">1</span></h3><details class="card"><summary><span class="qid">T2</span> 发货时物流单号是怎么回填的？</summary><p><b>怎么查：</b>接着读发货代码里回填物流单号的地方</p><p class="muted">书店后台/履约/发货 · 看发货，2026-01-07</p></details></div><div class="column col-1"><h3>同事<span class="col-count">1</span></h3><details class="card"><summary><span class="qid">T1</span> 支付回调验签用的是哪种签名算法？密钥多久换一次？</summary><p><b>怎么查：</b>代码里看不出来，问写支付对接的老陈</p><p class="muted">书店后台/交易/支付 · 读 `verifySign`，2026-01-06</p></details></div><div class="column col-2"><h3>上级<span class="col-count">0</span></h3></div></div><details class="solved"><summary>已解决（1）</summary><details class="solved-group"><summary>书店后台/交易/库存扣减（1）</summary><div class="table-wrap"><table><thead><tr><th>编号</th><th>问题</th><th>答案</th><th>来源/日期</th></tr></thead><tbody><tr><td>Q1</td><td>为什么库存要先预占、不直接扣？</td><td>直接扣的话，下单不付钱的人会把库存占死；预占加 30 分钟超时释放，等于给每个人一段"保留期"。见<a href="#doc-c6cc27bce7">库存扣减</a></td><td>讲下单流程，2026-01-05</td></tr></tbody></table></div></details></details></section><article class="doc" id="doc-d48c872032" data-nodes="书店后台/交易/下单"><div class="doc-top"><a class="back-graph" href="#项目">← 回到图谱</a><nav class="crumb"></nav><span class="doc-status"></span></div><div class="crumb-also"></div><div class="doc-grid"><div class="doc-body"><h1>下单流程</h1><p class="muted">更新 2026-01-07</p><p>一本书从被下单到送到读者手里的主干。2026-01-05 和 Claude 一起读 <code>order-service</code> 时讲的，依据是代码（当时没记行号）。</p>
+<h2 id="d48c872032-h1">打个比方：在餐馆点菜</h2>
+<table>
+<thead>
+<tr>
+<th>在餐馆</th>
+<th>在书店后台</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>你点单</td>
+<td>创建订单，状态"待支付"</td>
+</tr>
+<tr>
+<td>后厨先把菜留出来</td>
+<td><span class="term" data-term="p:书店后台/交易/库存扣减/库存预占">预占</span>库存</td>
+</tr>
+<tr>
+<td>你付钱</td>
+<td>跳到支付平台付款</td>
+</tr>
+<tr>
+<td>支付平台通知餐馆"钱到了"</td>
+<td>支付回调</td>
+</tr>
+<tr>
+<td>上菜</td>
+<td>发货</td>
+</tr>
+</tbody>
+</table>
+<h2 id="d48c872032-h2">主干：下单五步</h2>
+<ol>
+<li><strong>下单</strong>：<code>OrderController.create</code> 生成订单号，<span class="term" data-term="p:书店后台/交易/下单/订单状态">订单状态</span>是"待支付"。</li>
+<li><strong><span class="term" data-term="p:书店后台/交易/库存扣减/库存预占">预占</span>库存</strong>：先把书留出来，不是真扣；30 分钟没付钱就还回去。见<a href="#doc-c6cc27bce7">库存扣减</a>。</li>
+<li><strong>付钱</strong>：读者跳到支付平台付款。</li>
+<li><strong>支付回调</strong>：支付平台调我们的 <code>/pay/callback</code>，订单改成"已支付"，预占变成真扣。见<a href="#doc-d4e2b72719">支付回调</a>。</li>
+<li><strong>发货</strong>：见<a href="#doc-eb64aac2bf">发货</a>（只看了一半）。</li>
+</ol>
+<h2 id="d48c872032-h3">订单状态怎么变</h2>
+<ul>
+<li>下单后："待支付"。</li>
+<li>支付回调后："已支付"。</li>
+</ul>
+<h2 id="d48c872032-h4">订单号生成</h2>
+<p>订单号在 <code>OrderController.create</code> 里生成。怎么生成（格式、怎么保证不重复）这次没看。</p>
+<h2 id="d48c872032-h5">用到的套路</h2>
+<ul>
+<li><a href="#doc-7cb3e06ec4">先受理后回调</a>：第 3、4 步，读者去支付平台付钱，钱到没到由支付平台事后调回调通知我们。</li>
+<li>补偿任务：第 2 步，定时任务 <span class="term" data-term="p:书店后台/交易/库存扣减/超时释放"><code>ReleaseStockJob</code></span> 把超时没付钱的<span class="term" data-term="p:书店后台/交易/库存扣减/库存预占">预占</span>还回去。</li>
+</ul></div><aside class="doc-side"><div class="mini"></div><div class="side-points"></div><div class="side-toc"><div class="side-title">本页目录</div><a href="#d48c872032-h1" data-toc>打个比方：在餐馆点菜</a><a href="#d48c872032-h2" data-toc>主干：下单五步</a><a href="#d48c872032-h3" data-toc>订单状态怎么变</a><a href="#d48c872032-h4" data-toc>订单号生成</a><a href="#d48c872032-h5" data-toc>用到的套路</a></div><div class="side-refs"><div class="side-title">引用了我</div><ul><li><a href="#doc-7cb3e06ec4">先受理后回调</a></li><li><a href="#计划">2026-01-05</a></li><li><a href="#计划">2026-01-06</a></li><li><a href="#计划">2026-01-07</a></li><li><a href="#doc-eb64aac2bf">发货</a></li></ul></div></aside></div></article><article class="doc" id="doc-c6cc27bce7" data-nodes="书店后台/交易/库存扣减"><div class="doc-top"><a class="back-graph" href="#项目">← 回到图谱</a><nav class="crumb"></nav><span class="doc-status"></span></div><div class="crumb-also"></div><div class="doc-grid"><div class="doc-body"><h1>库存扣减</h1><p class="muted">更新 2026-01-05</p><p>下单时不直接扣库存：先"<span class="term" data-term="p:书店后台/交易/库存扣减/库存预占">预占</span>"，付了钱才真扣，超时不付就还回去。2026-01-05 讲下单流程时讲的，依据是 <code>order-service</code> 的代码（当时没记行号）。</p>
+<h2 id="c6cc27bce7-h1">预占</h2>
+<p>下单时先把书留出来（餐馆比喻里"后厨先把菜留出来"）。这时库存还没真扣。</p>
+<h2 id="c6cc27bce7-h2">超时释放</h2>
+<p>30 分钟没付钱，定时任务 <span class="term" data-term="p:书店后台/交易/库存扣减/超时释放"><code>ReleaseStockJob</code></span> 把<span class="term" data-term="p:书店后台/交易/库存扣减/库存预占">预占</span>的库存还回去。这是"补偿任务"的套路（定时释放预占）。</p>
+<h2 id="c6cc27bce7-h3">预占转真扣</h2>
+<p>读者付了钱、支付回调把订单改成"已支付"时，再把<span class="term" data-term="p:书店后台/交易/库存扣减/库存预占">预占</span>变成真扣。回调里的其他事见<a href="#doc-d4e2b72719">支付回调</a>。</p>
+<h2 id="c6cc27bce7-h4">为什么先预占、不直接扣</h2>
+<p>直接扣的话，下单不付钱的人会把库存占死；<span class="term" data-term="p:书店后台/交易/库存扣减/库存预占">预占</span>加<span class="term" data-term="p:书店后台/交易/库存扣减/超时释放">超时释放</span>，等于给每个人 30 分钟的"保留期"。（讲完下单流程 Claude 挑的问题，问题表 Q1）</p></div><aside class="doc-side"><div class="mini"></div><div class="side-points"></div><div class="side-toc"><div class="side-title">本页目录</div><a href="#c6cc27bce7-h1" data-toc>预占</a><a href="#c6cc27bce7-h2" data-toc>超时释放</a><a href="#c6cc27bce7-h3" data-toc>预占转真扣</a><a href="#c6cc27bce7-h4" data-toc>为什么先预占、不直接扣</a></div><div class="side-refs"><div class="side-title">引用了我</div><ul><li><a href="#计划">2026-01-05</a></li><li><a href="#问题">问题</a></li><li><a href="#doc-d48c872032">下单流程</a></li><li><a href="#doc-d4e2b72719">支付回调</a></li></ul></div></aside></div></article><article class="doc" id="doc-d4e2b72719" data-nodes="书店后台/交易/支付"><div class="doc-top"><a class="back-graph" href="#项目">← 回到图谱</a><nav class="crumb"></nav><span class="doc-status"></span></div><div class="crumb-also"></div><div class="doc-grid"><div class="doc-body"><h1>支付回调</h1><p class="muted">更新 2026-01-06</p><p>读者在支付平台付完钱，支付平台调我们的 <code>/pay/callback</code> 通知"钱到了"（<a href="#doc-7cb3e06ec4">先受理后回调</a>）。2026-01-05 讲下单流程时讲了<span class="term" data-term="p:书店后台/交易/支付/回调做的事">回调做的事</span>，01-06 补了<span class="term" data-term="c:幂等">幂等</span>和<span class="term" data-term="c:验签">验签</span>。依据是 <code>order-service</code> 的代码（当时没记行号）；标「未验证」的还没对照代码。</p>
+<h2 id="d4e2b72719-h1">回调做的事</h2>
+<ul>
+<li>把订单从"待支付"改成"已支付"。</li>
+<li>把<span class="term" data-term="p:书店后台/交易/库存扣减/库存预占">预占</span>的库存变成真扣（主讲在<a href="#doc-c6cc27bce7">库存扣减</a>「<span class="term" data-term="p:书店后台/交易/库存扣减/预占转真扣">预占转真扣</span>」）。</li>
+<li>回调里还有一段<span class="term" data-term="c:验签">验签</span> <span class="term" data-term="p:书店后台/交易/支付/回调验签"><code>verifySign</code></span>，见下面「回调验签」。</li>
+</ul>
+<h2 id="d4e2b72719-h2">回调幂等</h2>
+<p>支付平台没收到我们回"成功"时会重发，同一笔支付可能通知好几次（这是支付平台的通用做法；我们对接的这家重发几次、隔多久没查）。如果每次都"改已支付 + 扣库存"，库存会被扣多次。所以回调要<a href="#doc-4665348d39">幂等</a>：同一个支付单号处理一次和处理十次，结果一样。</p>
+<p>讲的做法（未验证：还没对照 <code>/pay/callback</code> 的代码确认是这样写的）：</p>
+<ul>
+<li>先按支付单号查处理过没有，处理过就直接回"成功"。</li>
+<li>没处理过，在一个事务里改状态，更新条件带上"状态是待支付"；更新到 0 行，说明别人已经处理了。</li>
+</ul>
+<h2 id="d4e2b72719-h3">回调验签</h2>
+<p><span class="term" data-term="p:书店后台/交易/支付/回调验签"><code>verifySign</code></span> 确认这条通知真的是支付平台发的、内容没被改过（通用的说法见<a href="#doc-84a5871454">验签</a>）。不验的话，谁都能伪造一条"已支付"的请求打到 <code>/pay/callback</code>，白拿书。签名用的密钥放在配置里。</p>
+<p>还不知道：用的是哪种签名算法、密钥多久换一次。代码里看不出来；这块是负责支付对接的同事老陈写的，要问他（问题 T1）。</p></div><aside class="doc-side"><div class="mini"></div><div class="side-points"></div><div class="side-toc"><div class="side-title">本页目录</div><a href="#d4e2b72719-h1" data-toc>回调做的事</a><a href="#d4e2b72719-h2" data-toc>回调幂等</a><a href="#d4e2b72719-h3" data-toc>回调验签</a></div><div class="side-refs"><div class="side-title">引用了我</div><ul><li><a href="#doc-4665348d39">幂等</a></li><li><a href="#doc-84a5871454">验签</a></li><li><a href="#计划">2026-01-05</a></li><li><a href="#计划">2026-01-06</a></li><li><a href="#doc-d48c872032">下单流程</a></li><li><a href="#doc-c6cc27bce7">库存扣减</a></li></ul></div></aside></div></article><article class="doc" id="doc-eb64aac2bf" data-nodes="书店后台/履约/发货"><div class="doc-top"><a class="back-graph" href="#项目">← 回到图谱</a><nav class="crumb"></nav><span class="doc-status"></span></div><div class="crumb-also"></div><div class="doc-grid"><div class="doc-body"><h1>发货</h1><p class="muted">👀 只看过 · 更新 2026-01-07</p><p>2026-01-07 看了一半，还没整理出怎么运转；这里只记已经确定的位置和卡住的地方。</p>
+<h2 id="eb64aac2bf-h1">在整条线里的位置</h2>
+<p>在<a href="#doc-d48c872032">下单流程</a>的五步里排在支付回调之后，是最后一步（餐馆比喻里的"上菜"）。</p>
+<h2 id="eb64aac2bf-h2">还没看懂的</h2>
+<ul>
+<li>物流单号是怎么回填的（问题 T2）。</li>
+</ul></div><aside class="doc-side"><div class="mini"></div><div class="side-points"></div><div class="side-toc"><div class="side-title">本页目录</div><a href="#eb64aac2bf-h1" data-toc>在整条线里的位置</a><a href="#eb64aac2bf-h2" data-toc>还没看懂的</a></div><div class="side-refs"><div class="side-title">引用了我</div><ul><li><a href="#计划">2026-01-07</a></li><li><a href="#doc-d48c872032">下单流程</a></li></ul></div></aside></div></article><article class="doc" id="doc-7cb3e06ec4" data-nodes="概念/先受理后回调"><div class="doc-top"><a class="back-graph" href="#项目">← 回到图谱</a><nav class="crumb"></nav><span class="doc-status"></span></div><div class="crumb-also"></div><div class="doc-grid"><div class="doc-body"><h1>先受理后回调</h1><p class="muted">🔄 学习中 · 方法 · 别名：异步回调</p><h2 id="7cb3e06ec4-h1">一句话</h2>
+<p>对方先把请求接下来，事情办完后再主动通知你结果，你不用一直等着。</p>
+<h2 id="7cb3e06ec4-h2">怎么做</h2>
+<ul>
+<li>发起方把请求交出去就返回，等对方办完来调自己的回调接口。</li>
+<li>接回调的一方要做<a href="#doc-4665348d39">幂等</a>：对方没收到"成功"会重发，同一条通知可能来好几次。</li>
+<li>接回调的一方还要<a href="#doc-84a5871454">验签</a>：确认通知真是对方发的，不是别人伪造的。</li>
+</ul>
+<h2 id="7cb3e06ec4-h3">在项目里的例子</h2>
+<ul>
+<li>书店后台下单：读者下单后跳到支付平台付钱，付完由支付平台调 <code>/pay/callback</code> 通知我们。见<a href="#doc-d48c872032">下单流程</a>「用到的套路」。</li>
+</ul>
+<h2 id="7cb3e06ec4-h4">来源</h2>
+<p>2026-01-05 讲下单流程时点出这个套路，2026-01-06 讲<span class="term" data-term="c:幂等">幂等</span>时写成概念卡。</p></div><aside class="doc-side"><div class="mini"></div><div class="side-points"></div><div class="side-toc"><div class="side-title">本页目录</div><a href="#7cb3e06ec4-h1" data-toc>一句话</a><a href="#7cb3e06ec4-h2" data-toc>怎么做</a><a href="#7cb3e06ec4-h3" data-toc>在项目里的例子</a><a href="#7cb3e06ec4-h4" data-toc>来源</a></div><div class="side-refs"><div class="side-title">引用了我</div><ul><li><a href="#计划">2026-01-06</a></li><li><a href="#doc-d48c872032">下单流程</a></li><li><a href="#doc-d4e2b72719">支付回调</a></li></ul></div></aside></div></article><article class="doc" id="doc-4665348d39" data-nodes="概念/幂等"><div class="doc-top"><a class="back-graph" href="#项目">← 回到图谱</a><nav class="crumb"></nav><span class="doc-status"></span></div><div class="crumb-also"></div><div class="doc-grid"><div class="doc-body"><h1>幂等</h1><p class="muted">🔄 学习中 · 概念 · 别名：idempotent、幂等性</p><h2 id="4665348d39-h1">一句话</h2>
+<p>同一件事处理一次和处理十次，结果一样。</p>
+<h2 id="4665348d39-h2">为什么需要</h2>
+<p>对方没收到"成功"应答就会重发，同一个请求可能到好几次；每次都照做一遍，就会重复改状态、重复扣东西。</p>
+<h2 id="4665348d39-h3">怎么做</h2>
+<ul>
+<li>先按业务单号查处理过没有，处理过就直接回"成功"。</li>
+<li>没处理过，在一个事务里改状态，更新时把原状态写进条件（"从待支付改成已支付"）；更新到 0 行，说明别人已经处理了。</li>
+</ul>
+<h2 id="4665348d39-h4">在项目里的例子</h2>
+<ul>
+<li>书店后台的支付回调：按支付单号去重，防止重复通知把库存扣多次。见<a href="#doc-d4e2b72719">支付回调</a>「<span class="term" data-term="p:书店后台/交易/支付/回调幂等">回调幂等</span>」。</li>
+</ul>
+<h2 id="4665348d39-h5">来源</h2>
+<p>2026-01-06 讲支付回调时 Claude 讲的。</p></div><aside class="doc-side"><div class="mini"></div><div class="side-points"></div><div class="side-toc"><div class="side-title">本页目录</div><a href="#4665348d39-h1" data-toc>一句话</a><a href="#4665348d39-h2" data-toc>为什么需要</a><a href="#4665348d39-h3" data-toc>怎么做</a><a href="#4665348d39-h4" data-toc>在项目里的例子</a><a href="#4665348d39-h5" data-toc>来源</a></div><div class="side-refs"><div class="side-title">引用了我</div><ul><li><a href="#doc-7cb3e06ec4">先受理后回调</a></li><li><a href="#计划">2026-01-06</a></li><li><a href="#doc-d4e2b72719">支付回调</a></li></ul></div></aside></div></article><article class="doc" id="doc-84a5871454" data-nodes="概念/验签"><div class="doc-top"><a class="back-graph" href="#项目">← 回到图谱</a><nav class="crumb"></nav><span class="doc-status"></span></div><div class="crumb-also"></div><div class="doc-grid"><div class="doc-body"><h1>验签</h1><p class="muted">🔄 学习中 · 方法 · 别名：签名校验</p><h2 id="84a5871454-h1">一句话</h2>
+<p>确认一条消息真的是对方发的、内容没被改过。</p>
+<h2 id="84a5871454-h2">为什么需要</h2>
+<p>不验的话，谁都能伪造一条消息冒充对方。比如伪造一条"已支付"的通知，就能不付钱白拿东西。</p>
+<h2 id="84a5871454-h3">怎么做</h2>
+<p>用约定好的算法和密钥核对消息带来的签名，对得上才处理。密钥放在配置里。</p>
+<h2 id="84a5871454-h4">在项目里的例子</h2>
+<ul>
+<li>书店后台的支付回调：<span class="term" data-term="p:书店后台/交易/支付/回调验签"><code>verifySign</code></span>，见<a href="#doc-d4e2b72719">支付回调</a>「回调验签」。用的哪种算法、密钥多久换一次还不知道（问题 T1）。</li>
+</ul>
+<h2 id="84a5871454-h5">来源</h2>
+<p>2026-01-06 讲支付回调时 Claude 讲的。</p></div><aside class="doc-side"><div class="mini"></div><div class="side-points"></div><div class="side-toc"><div class="side-title">本页目录</div><a href="#84a5871454-h1" data-toc>一句话</a><a href="#84a5871454-h2" data-toc>为什么需要</a><a href="#84a5871454-h3" data-toc>怎么做</a><a href="#84a5871454-h4" data-toc>在项目里的例子</a><a href="#84a5871454-h5" data-toc>来源</a></div><div class="side-refs"><div class="side-title">引用了我</div><ul><li><a href="#doc-7cb3e06ec4">先受理后回调</a></li><li><a href="#计划">2026-01-06</a></li><li><a href="#doc-d4e2b72719">支付回调</a></li></ul></div></aside></div></article><footer>生成时间：2026-11-12 11:05</footer></main>
+<div id="overlay"></div><aside id="peek" hidden></aside>
+<script type="application/json" id="kg-data">{"generatedAt":"2026-11-12 11:05","graphs":{"书店后台":{"name":"书店后台","root":"书店后台","nodes":{"书店后台":{"id":"书店后台","name":"书店后台","kind":"project","parent":null,"children":["书店后台/交易","书店后台/履约","书店后台/后台"],"block":-1,"doc":null,"anchor":"","summary":"","status":"学习中","shape":"half","mastered":0,"units":10,"started":9,"prereqs":[],"next":[],"confusions":[],"refs":[],"edit":null,"doc_status":null,"aliases":[],"measures":[]},"书店后台/交易":{"id":"书店后台/交易","name":"交易","kind":"block","parent":"书店后台","children":["书店后台/交易/下单","书店后台/交易/库存扣减","书店后台/交易/支付"],"block":0,"doc":null,"anchor":"","summary":"","status":"学习中","shape":"half","mastered":0,"units":9,"started":8,"prereqs":[],"next":[],"confusions":[],"refs":[],"edit":null,"doc_status":null,"aliases":[],"measures":[]},"书店后台/交易/下单":{"id":"书店后台/交易/下单","name":"下单","kind":"note","parent":"书店后台/交易","children":["书店后台/交易/下单/下单五步","书店后台/交易/下单/订单状态","书店后台/交易/下单/订单号生成"],"block":0,"doc":"d48c872032","anchor":"","summary":"","status":"学习中","shape":"half","mastered":0,"units":3,"started":2,"prereqs":[],"next":["书店后台/交易/库存扣减","书店后台/交易/支付"],"confusions":[],"refs":[["先受理后回调","#doc-7cb3e06ec4"],["2026-01-05","#计划"],["2026-01-06","#计划"],["2026-01-07","#计划"],["发货","#doc-eb64aac2bf"]],"edit":null,"doc_status":"学习中","aliases":[],"measures":["讲清下单五步","讲清订单状态怎么变"]},"书店后台/交易/下单/下单五步":{"id":"书店后台/交易/下单/下单五步","name":"下单五步","kind":"point","parent":"书店后台/交易/下单","children":[],"block":0,"doc":"d48c872032","anchor":"d48c872032-h2","summary":"下单 → 预占库存 → 付钱 → 支付回调 → 发货","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":[],"next":["书店后台/交易/下单/订单状态","书店后台/交易/支付/回调做的事"],"confusions":[],"refs":[],"edit":{"file":"项目/书店后台/交易/下单流程.md","line":42,"raw":"- 下单五步 | 状态: 学习中 | 一句话: 下单 → 预占库存 → 付钱 → 支付回调 → 发货 | 别名: 下单主干 -> #主干：下单五步","kind":"point"},"doc_status":"学习中","aliases":["下单主干"],"measures":[]},"书店后台/交易/下单/订单状态":{"id":"书店后台/交易/下单/订单状态","name":"订单状态","kind":"point","parent":"书店后台/交易/下单","children":[],"block":0,"doc":"d48c872032","anchor":"d48c872032-h3","summary":"下单后\"待支付\"，支付回调后\"已支付\"","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":["书店后台/交易/下单/下单五步"],"next":[],"confusions":[],"refs":[],"edit":{"file":"项目/书店后台/交易/下单流程.md","line":43,"raw":"- 订单状态 | 状态: 学习中 | 一句话: 下单后\"待支付\"，支付回调后\"已支付\" | 要先懂: 下单五步 -> #订单状态怎么变","kind":"point"},"doc_status":"学习中","aliases":[],"measures":[]},"书店后台/交易/下单/订单号生成":{"id":"书店后台/交易/下单/订单号生成","name":"订单号生成","kind":"point","parent":"书店后台/交易/下单","children":[],"block":0,"doc":"d48c872032","anchor":"d48c872032-h4","summary":"在 OrderController.create 里生成，规则还没看","status":"没碰","shape":"empty","mastered":0,"units":1,"started":0,"prereqs":[],"next":[],"confusions":[],"refs":[],"edit":{"file":"项目/书店后台/交易/下单流程.md","line":44,"raw":"- 订单号生成 | 状态: 没碰 | 一句话: 在 OrderController.create 里生成，规则还没看 -> #订单号生成","kind":"point"},"doc_status":"学习中","aliases":[],"measures":[]},"书店后台/交易/库存扣减":{"id":"书店后台/交易/库存扣减","name":"库存扣减","kind":"note","parent":"书店后台/交易","children":["书店后台/交易/库存扣减/库存预占","书店后台/交易/库存扣减/超时释放","书店后台/交易/库存扣减/预占转真扣"],"block":0,"doc":"c6cc27bce7","anchor":"","summary":"","status":"学习中","shape":"half","mastered":0,"units":3,"started":3,"prereqs":["书店后台/交易/下单"],"next":[],"confusions":[],"refs":[["2026-01-05","#计划"],["问题","#问题"],["下单流程","#doc-d48c872032"],["支付回调","#doc-d4e2b72719"]],"edit":null,"doc_status":"学习中","aliases":[],"measures":["讲清为什么先预占","讲清超时释放"]},"书店后台/交易/库存扣减/库存预占":{"id":"书店后台/交易/库存扣减/库存预占","name":"库存预占","kind":"point","parent":"书店后台/交易/库存扣减","children":[],"block":0,"doc":"c6cc27bce7","anchor":"c6cc27bce7-h1","summary":"下单时先把书留出来，不是真扣","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":[],"next":["书店后台/交易/库存扣减/超时释放","书店后台/交易/库存扣减/预占转真扣"],"confusions":["书店后台/交易/库存扣减/预占转真扣"],"refs":[],"edit":{"file":"项目/书店后台/交易/库存扣减.md","line":27,"raw":"- 库存预占 | 状态: 学习中 | 一句话: 下单时先把书留出来，不是真扣 | 容易混淆: 预占转真扣 | 别名: 预占 -> #预占","kind":"point"},"doc_status":"学习中","aliases":["预占"],"measures":[]},"书店后台/交易/库存扣减/超时释放":{"id":"书店后台/交易/库存扣减/超时释放","name":"超时释放","kind":"point","parent":"书店后台/交易/库存扣减","children":[],"block":0,"doc":"c6cc27bce7","anchor":"c6cc27bce7-h2","summary":"30 分钟没付钱，ReleaseStockJob 把预占还回去","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":["书店后台/交易/库存扣减/库存预占"],"next":[],"confusions":[],"refs":[],"edit":{"file":"项目/书店后台/交易/库存扣减.md","line":28,"raw":"- 超时释放 | 状态: 学习中 | 一句话: 30 分钟没付钱，ReleaseStockJob 把预占还回去 | 要先懂: 库存预占 | 别名: 释放预占, ReleaseStockJob -> #超时释放","kind":"point"},"doc_status":"学习中","aliases":["释放预占","ReleaseStockJob"],"measures":[]},"书店后台/交易/库存扣减/预占转真扣":{"id":"书店后台/交易/库存扣减/预占转真扣","name":"预占转真扣","kind":"point","parent":"书店后台/交易/库存扣减","children":[],"block":0,"doc":"c6cc27bce7","anchor":"c6cc27bce7-h3","summary":"支付回调时把预占变成真扣","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":["书店后台/交易/库存扣减/库存预占"],"next":[],"confusions":[],"refs":[],"edit":{"file":"项目/书店后台/交易/库存扣减.md","line":29,"raw":"- 预占转真扣 | 状态: 学习中 | 一句话: 支付回调时把预占变成真扣 | 要先懂: 库存预占 -> #预占转真扣","kind":"point"},"doc_status":"学习中","aliases":[],"measures":[]},"书店后台/交易/支付":{"id":"书店后台/交易/支付","name":"支付 · 支付与支付回调","kind":"note","parent":"书店后台/交易","children":["书店后台/交易/支付/回调做的事","书店后台/交易/支付/回调幂等","书店后台/交易/支付/回调验签"],"block":0,"doc":"d4e2b72719","anchor":"","summary":"","status":"学习中","shape":"half","mastered":0,"units":3,"started":3,"prereqs":["书店后台/交易/下单","概念/先受理后回调"],"next":[],"confusions":[],"refs":[["幂等","#doc-4665348d39"],["验签","#doc-84a5871454"],["2026-01-05","#计划"],["2026-01-06","#计划"],["下单流程","#doc-d48c872032"],["库存扣减","#doc-c6cc27bce7"]],"edit":null,"doc_status":"学习中","aliases":[],"measures":["讲清回调做的事","讲清幂等和验签"]},"书店后台/交易/支付/回调做的事":{"id":"书店后台/交易/支付/回调做的事","name":"回调做的事","kind":"point","parent":"书店后台/交易/支付","children":[],"block":0,"doc":"d4e2b72719","anchor":"d4e2b72719-h1","summary":"把订单改成\"已支付\"，把预占变成真扣","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":["书店后台/交易/下单/下单五步"],"next":[],"confusions":[],"refs":[],"edit":{"file":"项目/书店后台/交易/支付回调.md","line":32,"raw":"- 回调做的事 | 状态: 学习中 | 一句话: 把订单改成\"已支付\"，把预占变成真扣 | 要先懂: 下单五步 -> #回调做的事","kind":"point"},"doc_status":"学习中","aliases":[],"measures":[]},"书店后台/交易/支付/回调幂等":{"id":"书店后台/交易/支付/回调幂等","name":"回调幂等","kind":"point","parent":"书店后台/交易/支付","children":[],"block":0,"doc":"d4e2b72719","anchor":"d4e2b72719-h2","summary":"支付平台重复通知时，同一个支付单号只生效一次","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":["概念/幂等"],"next":[],"confusions":[],"refs":[],"edit":{"file":"项目/书店后台/交易/支付回调.md","line":33,"raw":"- 回调幂等 | 状态: 学习中 | 一句话: 支付平台重复通知时，同一个支付单号只生效一次 | 要先懂: 幂等 -> #回调幂等","kind":"point"},"doc_status":"学习中","aliases":[],"measures":[]},"书店后台/交易/支付/回调验签":{"id":"书店后台/交易/支付/回调验签","name":"回调验签","kind":"point","parent":"书店后台/交易/支付","children":[],"block":0,"doc":"d4e2b72719","anchor":"d4e2b72719-h3","summary":"verifySign 确认通知真是支付平台发的、没被改过，防伪造\"已支付\"","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":["概念/验签"],"next":[],"confusions":[],"refs":[],"edit":{"file":"项目/书店后台/交易/支付回调.md","line":34,"raw":"- 回调验签 | 状态: 学习中 | 一句话: verifySign 确认通知真是支付平台发的、没被改过，防伪造\"已支付\" | 要先懂: 验签 | 别名: verifySign -> #回调验签","kind":"point"},"doc_status":"学习中","aliases":["verifySign"],"measures":[]},"书店后台/履约":{"id":"书店后台/履约","name":"履约","kind":"block","parent":"书店后台","children":["书店后台/履约/发货","书店后台/履约/退货"],"block":1,"doc":null,"anchor":"","summary":"","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":[],"next":[],"confusions":[],"refs":[],"edit":null,"doc_status":null,"aliases":[],"measures":[]},"书店后台/履约/发货":{"id":"书店后台/履约/发货","name":"发货","kind":"note","parent":"书店后台/履约","children":[],"block":1,"doc":"eb64aac2bf","anchor":"","summary":"","status":"只看过","shape":"empty","mastered":0,"units":1,"started":1,"prereqs":[],"next":[],"confusions":[],"refs":[["2026-01-07","#计划"],["下单流程","#doc-d48c872032"]],"edit":{"file":"项目/书店后台/履约/发货.md","line":3,"raw":"> 状态: 只看过","kind":"header"},"doc_status":"只看过","aliases":[],"measures":["讲清物流单号怎么回填"]},"书店后台/履约/退货":{"id":"书店后台/履约/退货","name":"退货","kind":"blank","parent":"书店后台/履约","children":[],"block":1,"doc":null,"anchor":"","summary":"","status":"空白","shape":"dashed","mastered":0,"units":0,"started":0,"prereqs":[],"next":[],"confusions":[],"refs":[],"edit":null,"doc_status":null,"aliases":[],"measures":[]},"书店后台/后台":{"id":"书店后台/后台","name":"后台","kind":"block","parent":"书店后台","children":["书店后台/后台/商品上架","书店后台/后台/对账报表"],"block":2,"doc":null,"anchor":"","summary":"","status":"没碰","shape":"empty","mastered":0,"units":0,"started":0,"prereqs":[],"next":[],"confusions":[],"refs":[],"edit":null,"doc_status":null,"aliases":[],"measures":[]},"书店后台/后台/商品上架":{"id":"书店后台/后台/商品上架","name":"商品上架","kind":"blank","parent":"书店后台/后台","children":[],"block":2,"doc":null,"anchor":"","summary":"","status":"空白","shape":"dashed","mastered":0,"units":0,"started":0,"prereqs":[],"next":[],"confusions":[],"refs":[],"edit":null,"doc_status":null,"aliases":[],"measures":[]},"书店后台/后台/对账报表":{"id":"书店后台/后台/对账报表","name":"对账报表","kind":"blank","parent":"书店后台/后台","children":[],"block":2,"doc":null,"anchor":"","summary":"","status":"空白","shape":"dashed","mastered":0,"units":0,"started":0,"prereqs":[],"next":[],"confusions":[],"refs":[],"edit":null,"doc_status":null,"aliases":[],"measures":[]}}},"概念":{"name":"概念","root":"概念","nodes":{"概念":{"id":"概念","name":"概念","kind":"project","parent":null,"children":["概念/概念","概念/方法"],"block":-1,"doc":null,"anchor":"","summary":"","status":"学习中","shape":"half","mastered":0,"units":3,"started":3,"prereqs":[],"next":[],"confusions":[],"refs":[],"edit":null,"doc_status":null,"aliases":[],"measures":[]},"概念/概念":{"id":"概念/概念","name":"概念","kind":"group","parent":"概念","children":["概念/幂等"],"block":-1,"doc":null,"anchor":"","summary":"","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":[],"next":[],"confusions":[],"refs":[],"edit":null,"doc_status":null,"aliases":[],"measures":[]},"概念/方法":{"id":"概念/方法","name":"方法","kind":"group","parent":"概念","children":["概念/先受理后回调","概念/验签"],"block":-1,"doc":null,"anchor":"","summary":"","status":"学习中","shape":"half","mastered":0,"units":2,"started":2,"prereqs":[],"next":[],"confusions":[],"refs":[],"edit":null,"doc_status":null,"aliases":[],"measures":[]},"概念/先受理后回调":{"id":"概念/先受理后回调","name":"先受理后回调","kind":"concept","parent":"概念/方法","children":[],"block":-1,"doc":"7cb3e06ec4","anchor":"","summary":"对方先把请求接下来，事情办完后再主动通知你结果，你不用一直等着。","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":[],"next":["书店后台/交易/支付"],"confusions":[],"refs":[["2026-01-06","#计划"],["下单流程","#doc-d48c872032"],["支付回调","#doc-d4e2b72719"]],"edit":{"file":"概念/先受理后回调.md","line":4,"raw":"> 状态: 学习中","kind":"header"},"doc_status":"学习中","aliases":["异步回调"],"measures":[]},"概念/幂等":{"id":"概念/幂等","name":"幂等","kind":"concept","parent":"概念/概念","children":[],"block":-1,"doc":"4665348d39","anchor":"","summary":"同一件事处理一次和处理十次，结果一样。","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":[],"next":["书店后台/交易/支付/回调幂等"],"confusions":[],"refs":[["先受理后回调","#doc-7cb3e06ec4"],["2026-01-06","#计划"],["支付回调","#doc-d4e2b72719"]],"edit":{"file":"概念/幂等.md","line":4,"raw":"> 状态: 学习中","kind":"header"},"doc_status":"学习中","aliases":["idempotent","幂等性"],"measures":[]},"概念/验签":{"id":"概念/验签","name":"验签","kind":"concept","parent":"概念/方法","children":[],"block":-1,"doc":"84a5871454","anchor":"","summary":"确认一条消息真的是对方发的、内容没被改过。","status":"学习中","shape":"half","mastered":0,"units":1,"started":1,"prereqs":[],"next":["书店后台/交易/支付/回调验签"],"confusions":[],"refs":[["先受理后回调","#doc-7cb3e06ec4"],["2026-01-06","#计划"],["支付回调","#doc-d4e2b72719"]],"edit":{"file":"概念/验签.md","line":4,"raw":"> 状态: 学习中","kind":"header"},"doc_status":"学习中","aliases":["签名校验"],"measures":[]}}}},"terms":{"p:书店后台/交易/下单/下单五步":{"name":"下单五步","kind":"point","summary":"下单 → 预占库存 → 付钱 → 支付回调 → 发货","source":"","node":"书店后台/交易/下单/下单五步"},"p:书店后台/交易/下单/订单状态":{"name":"订单状态","kind":"point","summary":"下单后\"待支付\"，支付回调后\"已支付\"","source":"","node":"书店后台/交易/下单/订单状态"},"p:书店后台/交易/下单/订单号生成":{"name":"订单号生成","kind":"point","summary":"在 OrderController.create 里生成，规则还没看","source":"","node":"书店后台/交易/下单/订单号生成"},"p:书店后台/交易/库存扣减/库存预占":{"name":"库存预占","kind":"point","summary":"下单时先把书留出来，不是真扣","source":"","node":"书店后台/交易/库存扣减/库存预占"},"p:书店后台/交易/库存扣减/超时释放":{"name":"超时释放","kind":"point","summary":"30 分钟没付钱，ReleaseStockJob 把预占还回去","source":"","node":"书店后台/交易/库存扣减/超时释放"},"p:书店后台/交易/库存扣减/预占转真扣":{"name":"预占转真扣","kind":"point","summary":"支付回调时把预占变成真扣","source":"","node":"书店后台/交易/库存扣减/预占转真扣"},"p:书店后台/交易/支付/回调做的事":{"name":"回调做的事","kind":"point","summary":"把订单改成\"已支付\"，把预占变成真扣","source":"","node":"书店后台/交易/支付/回调做的事"},"p:书店后台/交易/支付/回调幂等":{"name":"回调幂等","kind":"point","summary":"支付平台重复通知时，同一个支付单号只生效一次","source":"","node":"书店后台/交易/支付/回调幂等"},"p:书店后台/交易/支付/回调验签":{"name":"回调验签","kind":"point","summary":"verifySign 确认通知真是支付平台发的、没被改过，防伪造\"已支付\"","source":"","node":"书店后台/交易/支付/回调验签"},"c:先受理后回调":{"name":"先受理后回调","kind":"concept","summary":"对方先把请求接下来，事情办完后再主动通知你结果，你不用一直等着。","source":"","node":"概念/先受理后回调"},"c:幂等":{"name":"幂等","kind":"concept","summary":"同一件事处理一次和处理十次，结果一样。","source":"","node":"概念/幂等"},"c:验签":{"name":"验签","kind":"concept","summary":"确认一条消息真的是对方发的、内容没被改过。","source":"","node":"概念/验签"}},"search":[{"k":"note","t":"下单流程","s":"","w":["下单流程"],"href":"#doc-d48c872032","a":"","node":"书店后台/交易/下单"},{"k":"point","t":"下单五步","s":"下单 → 预占库存 → 付钱 → 支付回调 → 发货","w":["下单五步","下单主干"],"href":"#doc-d48c872032","a":"d48c872032-h2","node":"书店后台/交易/下单/下单五步"},{"k":"point","t":"订单状态","s":"下单后\"待支付\"，支付回调后\"已支付\"","w":["订单状态"],"href":"#doc-d48c872032","a":"d48c872032-h3","node":"书店后台/交易/下单/订单状态"},{"k":"point","t":"订单号生成","s":"在 OrderController.create 里生成，规则还没看","w":["订单号生成"],"href":"#doc-d48c872032","a":"d48c872032-h4","node":"书店后台/交易/下单/订单号生成"},{"k":"note","t":"库存扣减","s":"","w":["库存扣减"],"href":"#doc-c6cc27bce7","a":"","node":"书店后台/交易/库存扣减"},{"k":"point","t":"库存预占","s":"下单时先把书留出来，不是真扣","w":["库存预占","预占"],"href":"#doc-c6cc27bce7","a":"c6cc27bce7-h1","node":"书店后台/交易/库存扣减/库存预占"},{"k":"point","t":"超时释放","s":"30 分钟没付钱，ReleaseStockJob 把预占还回去","w":["超时释放","释放预占","ReleaseStockJob"],"href":"#doc-c6cc27bce7","a":"c6cc27bce7-h2","node":"书店后台/交易/库存扣减/超时释放"},{"k":"point","t":"预占转真扣","s":"支付回调时把预占变成真扣","w":["预占转真扣"],"href":"#doc-c6cc27bce7","a":"c6cc27bce7-h3","node":"书店后台/交易/库存扣减/预占转真扣"},{"k":"note","t":"支付回调","s":"","w":["支付回调"],"href":"#doc-d4e2b72719","a":"","node":"书店后台/交易/支付"},{"k":"point","t":"回调做的事","s":"把订单改成\"已支付\"，把预占变成真扣","w":["回调做的事"],"href":"#doc-d4e2b72719","a":"d4e2b72719-h1","node":"书店后台/交易/支付/回调做的事"},{"k":"point","t":"回调幂等","s":"支付平台重复通知时，同一个支付单号只生效一次","w":["回调幂等"],"href":"#doc-d4e2b72719","a":"d4e2b72719-h2","node":"书店后台/交易/支付/回调幂等"},{"k":"point","t":"回调验签","s":"verifySign 确认通知真是支付平台发的、没被改过，防伪造\"已支付\"","w":["回调验签","verifySign"],"href":"#doc-d4e2b72719","a":"d4e2b72719-h3","node":"书店后台/交易/支付/回调验签"},{"k":"note","t":"发货","s":"","w":["发货"],"href":"#doc-eb64aac2bf","a":"","node":"书店后台/履约/发货"},{"k":"concept","t":"先受理后回调","s":"对方先把请求接下来，事情办完后再主动通知你结果，你不用一直等着。","w":["先受理后回调","异步回调"],"href":"#doc-7cb3e06ec4","a":"","node":"概念/先受理后回调"},{"k":"concept","t":"幂等","s":"同一件事处理一次和处理十次，结果一样。","w":["幂等","idempotent","幂等性"],"href":"#doc-4665348d39","a":"","node":"概念/幂等"},{"k":"concept","t":"验签","s":"确认一条消息真的是对方发的、内容没被改过。","w":["验签","签名校验"],"href":"#doc-84a5871454","a":"","node":"概念/验签"},{"k":"heading","t":"打个比方：在餐馆点菜","s":"下单流程","w":["打个比方：在餐馆点菜"],"href":"#doc-d48c872032","a":"d48c872032-h1","node":""},{"k":"heading","t":"主干：下单五步","s":"下单流程","w":["主干：下单五步"],"href":"#doc-d48c872032","a":"d48c872032-h2","node":""},{"k":"heading","t":"订单状态怎么变","s":"下单流程","w":["订单状态怎么变"],"href":"#doc-d48c872032","a":"d48c872032-h3","node":""},{"k":"heading","t":"订单号生成","s":"下单流程","w":["订单号生成"],"href":"#doc-d48c872032","a":"d48c872032-h4","node":""},{"k":"heading","t":"用到的套路","s":"下单流程","w":["用到的套路"],"href":"#doc-d48c872032","a":"d48c872032-h5","node":""},{"k":"heading","t":"预占","s":"库存扣减","w":["预占"],"href":"#doc-c6cc27bce7","a":"c6cc27bce7-h1","node":""},{"k":"heading","t":"超时释放","s":"库存扣减","w":["超时释放"],"href":"#doc-c6cc27bce7","a":"c6cc27bce7-h2","node":""},{"k":"heading","t":"预占转真扣","s":"库存扣减","w":["预占转真扣"],"href":"#doc-c6cc27bce7","a":"c6cc27bce7-h3","node":""},{"k":"heading","t":"为什么先预占、不直接扣","s":"库存扣减","w":["为什么先预占、不直接扣"],"href":"#doc-c6cc27bce7","a":"c6cc27bce7-h4","node":""},{"k":"heading","t":"回调做的事","s":"支付回调","w":["回调做的事"],"href":"#doc-d4e2b72719","a":"d4e2b72719-h1","node":""},{"k":"heading","t":"回调幂等","s":"支付回调","w":["回调幂等"],"href":"#doc-d4e2b72719","a":"d4e2b72719-h2","node":""},{"k":"heading","t":"回调验签","s":"支付回调","w":["回调验签"],"href":"#doc-d4e2b72719","a":"d4e2b72719-h3","node":""},{"k":"heading","t":"在整条线里的位置","s":"发货","w":["在整条线里的位置"],"href":"#doc-eb64aac2bf","a":"eb64aac2bf-h1","node":""},{"k":"heading","t":"还没看懂的","s":"发货","w":["还没看懂的"],"href":"#doc-eb64aac2bf","a":"eb64aac2bf-h2","node":""},{"k":"heading","t":"一句话","s":"先受理后回调","w":["一句话"],"href":"#doc-7cb3e06ec4","a":"7cb3e06ec4-h1","node":""},{"k":"heading","t":"怎么做","s":"先受理后回调","w":["怎么做"],"href":"#doc-7cb3e06ec4","a":"7cb3e06ec4-h2","node":""},{"k":"heading","t":"在项目里的例子","s":"先受理后回调","w":["在项目里的例子"],"href":"#doc-7cb3e06ec4","a":"7cb3e06ec4-h3","node":""},{"k":"heading","t":"来源","s":"先受理后回调","w":["来源"],"href":"#doc-7cb3e06ec4","a":"7cb3e06ec4-h4","node":""},{"k":"heading","t":"一句话","s":"幂等","w":["一句话"],"href":"#doc-4665348d39","a":"4665348d39-h1","node":""},{"k":"heading","t":"为什么需要","s":"幂等","w":["为什么需要"],"href":"#doc-4665348d39","a":"4665348d39-h2","node":""},{"k":"heading","t":"怎么做","s":"幂等","w":["怎么做"],"href":"#doc-4665348d39","a":"4665348d39-h3","node":""},{"k":"heading","t":"在项目里的例子","s":"幂等","w":["在项目里的例子"],"href":"#doc-4665348d39","a":"4665348d39-h4","node":""},{"k":"heading","t":"来源","s":"幂等","w":["来源"],"href":"#doc-4665348d39","a":"4665348d39-h5","node":""},{"k":"heading","t":"一句话","s":"验签","w":["一句话"],"href":"#doc-84a5871454","a":"84a5871454-h1","node":""},{"k":"heading","t":"为什么需要","s":"验签","w":["为什么需要"],"href":"#doc-84a5871454","a":"84a5871454-h2","node":""},{"k":"heading","t":"怎么做","s":"验签","w":["怎么做"],"href":"#doc-84a5871454","a":"84a5871454-h3","node":""},{"k":"heading","t":"在项目里的例子","s":"验签","w":["在项目里的例子"],"href":"#doc-84a5871454","a":"84a5871454-h4","node":""},{"k":"heading","t":"来源","s":"验签","w":["来源"],"href":"#doc-84a5871454","a":"84a5871454-h5","node":""}],"docNodes":{"d48c872032":["书店后台/交易/下单"],"c6cc27bce7":["书店后台/交易/库存扣减"],"d4e2b72719":["书店后台/交易/支付"],"eb64aac2bf":["书店后台/履约/发货"],"7cb3e06ec4":["概念/先受理后回调"],"4665348d39":["概念/幂等"],"84a5871454":["概念/验签"]}}</script><script>
+function show(){
+  var h=decodeURIComponent(location.hash.slice(1))||'项目';
+  document.querySelectorAll('.sec,.doc').forEach(function(e){e.classList.remove('show')});
+  var doc=h.indexOf('doc-')===0?document.getElementById(h):null;
+  var sec=doc?null:(document.getElementById('sec-'+h)||document.getElementById('sec-项目'));
+  (doc||sec).classList.add('show');
+  var active=doc?null:sec.id.slice(4);
+  document.querySelectorAll('.nav-links a').forEach(function(a){a.classList.toggle('active',a.dataset.nav===active)});
+  if(typeof Reader!=='undefined')Reader.arrive();else window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',show);show();
+function pickProject(name){
+  document.querySelectorAll('.proj-pane').forEach(function(p){p.classList.toggle('show',p.dataset.pane===name)});
+  document.querySelectorAll('.proj-tab').forEach(function(b){b.classList.toggle('active',b.dataset.project===name)});
+}
+document.querySelectorAll('.proj-tab').forEach(function(b){b.addEventListener('click',function(){pickProject(b.dataset.project)})});
+var firstTab=document.querySelector('.proj-tab');if(firstTab)pickProject(firstTab.dataset.project);
+document.addEventListener('click',function(e){
+  var a=e.target.closest('[data-img]');var o=document.getElementById('overlay');
+  if(a){e.preventDefault();o.innerHTML=document.getElementById(a.dataset.img).innerHTML;o.classList.add('show');}
+  else if(e.target.closest('#overlay')){o.classList.remove('show');}
+});
+document.querySelectorAll('select[data-filter]').forEach(function(s){s.addEventListener('change',function(){
+  var table=s.dataset.table,picks=[].slice.call(document.querySelectorAll('select[data-table="'+table+'"]'));
+  document.querySelectorAll('#'+table+' tbody tr').forEach(function(r){
+    r.style.display=picks.every(function(p){return !p.value||r.dataset[p.dataset.filter]===p.value})?'':'none';});
+});});
+// Changing mastery from the page: rewrite one status field in the markdown file through Chrome's File
+// System Access, show the change at once and keep showing it (a localStorage overlay) until the page is
+// rebuilt. Without that API, or when access is refused, the buttons copy a line to paste to Claude.
+// This file runs first in the page script (KG reads the overlay while parsing the data), so it only
+// reaches KG and Reader inside functions that run later.
+var Status = (function () {
+  "use strict";
+
+  var CHOICES = { point: ["已掌握", "学习中", "没碰"], header: ["已掌握", "学习中", "只看过"] };
+  var SHAPES = { "已掌握": "full", "学习中": "half" };  // anything else is an empty circle
+  var BOM = "\uFEFF";
+  var OVERLAY_KEY = "kg-overlay";
+  var DB = { name: "kg-status", store: "handles", key: "root" };
+  var ANCHOR = /\s->\s+#.*$/;  // same as hub/knowledge.py: the '-> #小节' tail of a point line
+  // key, space after the colon, value, trailing space
+  var POINT_STATUS = /^(\s*状态\s*[:：])(\s*)(.*?)(\s*)$/;  // one '|'-separated field
+  var HEADER_STATUS = /^(>\s*状态\s*[:：])(\s*)(.*?)(\s*)$/;
+  var SAY = { changed: "文件刚被改过，请刷新", manual: "这一行没法自动改，请让 Claude 改", copied: "已复制，粘贴给 Claude",
+              pick: "请选择知识库文件夹", busy: "正在写入…", forgot: "下次改时重新选文件夹" };
+  var TOAST_MS = 2600, TOAST_LONG_MS = 10000;  // long: there is something to click or copy
+
+  // ---- pure helpers ----
+
+  function choices(edit) {
+    return edit ? (CHOICES[edit.kind] || []).slice() : [];
+  }
+
+  function shapeOf(status) {
+    return SHAPES[status] || "empty";
+  }
+
+  /** The status the buttons of node stand for: a header edit is the note's own (doc_status), which on a
+   *  block or group differs from the node's rollup status. */
+  function current(node) {
+    return node.edit && node.edit.kind === "header" ? node.doc_status : node.status;
+  }
+
+  /** A status field matched by POINT_STATUS / HEADER_STATUS with newStatus as its value. An empty value
+   *  gets one space after the colon and keeps the spacing that followed it (e.g. before the next '|'). */
+  function withValue(field, status) {
+    return field[3] ? field[1] + field[2] + status + field[4] : field[1] + " " + status + field[2] + field[4];
+  }
+
+  function own(object, key) {
+    return object && Object.prototype.hasOwnProperty.call(object, key) ? object[key] : null;
+  }
+
+  /** Text with the status of the line edit points at set to newStatus, every other character kept (BOM,
+   *  each line's own \r\n or \n). {ok: false, reason}: "missing" / "changed" (the line is not edit.raw
+   *  any more), "ambiguous" (two status fields), "unsupported" (a lone \r: lines are counted differently
+   *  by the generator). */
+  function rewriteStatus(text, edit, newStatus) {
+    if (/\r(?!\n)/.test(text)) return { ok: false, reason: "unsupported" };
+    var lines = text.split("\n"), i = edit.line - 1;
+    if (!(i >= 0 && i < lines.length)) return { ok: false, reason: "missing" };
+    var line = lines[i], bom = i === 0 && line.charAt(0) === BOM ? BOM : "";
+    var cr = line.charAt(line.length - 1) === "\r" ? "\r" : "";
+    var body = line.slice(bom.length, line.length - cr.length);
+    if (body !== edit.raw) return { ok: false, reason: "changed" };
+    var next = edit.kind === "header" ? headerLine(body, newStatus) : pointLine(body, newStatus);
+    if (typeof next !== "string") return { ok: false, reason: next ? next.refused : "changed" };
+    lines[i] = bom + next + cr;
+    return { ok: true, text: lines.join("\n") };
+  }
+
+  /** '- 名称 | 状态: X | …': swap X, or put ' | 状态: Y' right after the name when there is none.
+   *  Two status fields: {refused: "ambiguous"} (the generator reads the last one). */
+  function pointLine(line, status) {
+    var cut = line.search(ANCHOR), head = cut < 0 ? line : line.slice(0, cut), tail = cut < 0 ? "" : line.slice(cut);
+    var parts = head.split("|"), at = -1;
+    for (var i = 1; i < parts.length; i++) {
+      if (!POINT_STATUS.test(parts[i])) continue;
+      if (at >= 0) return { refused: "ambiguous" };
+      at = i;
+    }
+    if (at >= 0) {
+      parts[at] = withValue(POINT_STATUS.exec(parts[at]), status);
+    } else {
+      parts[0] = parts[0].replace(/\s*$/, function (space) { return " | 状态: " + status + space; });
+    }
+    return parts.join("|") + tail;
+  }
+
+  function headerLine(line, status) {
+    var field = HEADER_STATUS.exec(line);
+    return field ? withValue(field, status) : null;
+  }
+
+  /** A header edit sets the note's doc_status; status and shape change only on a leaf (on a block or
+   *  group they are its rollup, which is not recomputed). */
+  function setStatus(node, status, raw) {
+    if (node.edit.kind === "header") node.doc_status = status;
+    if (!(node.children && node.children.length)) {
+      node.status = status;
+      node.shape = shapeOf(status);
+    }
+    node.edit.raw = raw;
+  }
+
+  /** Does an overlay entry {status, from, raw, generatedAt} still say something about node? Only on the
+   *  page build it was made on, while that page shows the line the change was made from. */
+  function applies(node, entry, generatedAt) {
+    return !!(node && node.edit && entry && entry.generatedAt === generatedAt && typeof entry.from === "string"
+      && typeof entry.raw === "string" && node.edit.raw === entry.from && choices(node.edit).indexOf(entry.status) >= 0);
+  }
+
+  /** Show the overlay entries {nodeId: entry} that still apply to graph's nodes (built at generatedAt). */
+  function applyOverlay(graph, overlay, generatedAt) {
+    var nodes = graph.nodes || {};
+    Object.keys(overlay || {}).forEach(function (id) {
+      var node = own(nodes, id), entry = overlay[id];
+      if (applies(node, entry, generatedAt)) setStatus(node, entry.status, entry.raw);
+    });
+    return graph;
+  }
+
+  function copyLine(node, newStatus) {
+    return "把 " + node.name + " 改成 " + newStatus + "（" + (node.edit ? node.edit.file : "") + "）";
+  }
+
+  /** Name of the folder holding the page file at pathname ('' when there is none). */
+  function pageFolder(pathname) {
+    var parts = String(pathname || "").split("/");
+    return parts.length > 2 ? parts[parts.length - 2] : "";
+  }
+
+  function lineAt(text, line) {
+    var body = text.split("\n")[line - 1].replace(/\r$/, "");
+    return body.charAt(0) === BOM ? body.slice(1) : body;
+  }
+
+  // ---- files (anything with the File System Access handle methods) ----
+
+  function isMissing(error) {
+    return !!error && ["NotFoundError", "TypeMismatchError", "TypeError"].indexOf(error.name) >= 0;
+  }
+
+  async function fileHandle(root, path) {
+    var parts = path.split("/"), dir = root;
+    for (var i = 0; i < parts.length - 1; i++) dir = await dir.getDirectoryHandle(parts[i]);
+    return dir.getFileHandle(parts[parts.length - 1]);
+  }
+
+  /** Set the status of edit's line in the file under root: {ok: true, raw: that line now} only after a
+   *  write; otherwise {ok: false, reason}: rewriteStatus's reasons, "unsupported" for a file that is not
+   *  UTF-8, "unchanged" when the file already says newStatus (nothing written). The bytes written differ
+   *  from the file's only in that one value. */
+  async function writeStatus(root, edit, newStatus) {
+    var handle, text;
+    try {
+      handle = await fileHandle(root, edit.file);
+    } catch (e) {
+      if (isMissing(e)) return { ok: false, reason: "missing" };
+      throw e;
+    }
+    var bytes = await (await handle.getFile()).arrayBuffer();
+    try {
+      text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
+    } catch (e) {
+      return { ok: false, reason: "unsupported" };
+    }
+    var result = rewriteStatus(text, edit, newStatus);
+    if (!result.ok) return result;
+    if (result.text === text) return { ok: false, reason: "unchanged" };
+    var out = await handle.createWritable();
+    try {
+      await out.write(new TextEncoder().encode(result.text));
+      await out.close();
+    } catch (e) {
+      if (out.abort) await out.abort().catch(function () {});
+      throw e;
+    }
+    return { ok: true, raw: lineAt(result.text, edit.line) };
+  }
+
+  /** The knowledge base: has 维护约定.md or 项目/, and (when known) is the folder holding this page. */
+  async function looksLikeKb(root, folderName) {
+    if (folderName && root.name !== folderName) return false;
+    try {
+      await root.getFileHandle("维护约定.md");
+      return true;
+    } catch (e) { /* try the other mark */ }
+    try {
+      await root.getDirectoryHandle("项目");
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ---- overlay and the remembered folder, per page file (all file:// pages share one origin) ----
+
+  function page() {
+    return typeof location !== "undefined" ? decodeURIComponent(location.pathname) : "";
+  }
+
+  /** {page path: {node id: {status, from, raw, generatedAt}}} */
+  function loadOverlay() {
+    try {
+      var saved = JSON.parse(window.localStorage.getItem(OVERLAY_KEY) || "{}");
+      return saved && typeof saved === "object" ? saved : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveOverlay(overlay) {
+    try {
+      window.localStorage.setItem(OVERLAY_KEY, JSON.stringify(overlay));
+    } catch (e) { /* storage blocked: the change shows until the page is reloaded */ }
+  }
+
+  /** Called by KG when it first parses the page data, before anything is drawn. This page's entries
+   *  that no longer apply (page rebuilt, line changed, node gone) are dropped. */
+  function overlayData(data) {
+    var all = loadOverlay(), here = page(), mine = own(all, here) || {}, live = {}, graphs = data.graphs || {};
+    Object.keys(mine).forEach(function (id) {
+      Object.keys(graphs).forEach(function (name) {
+        if (applies(own(graphs[name].nodes, id), mine[id], data.generatedAt)) live[id] = mine[id];
+      });
+    });
+    Object.keys(graphs).forEach(function (name) { applyOverlay(graphs[name], live, data.generatedAt); });
+    if (Object.keys(live).length !== Object.keys(mine).length) {
+      if (Object.keys(live).length) all[here] = live;
+      else delete all[here];
+      saveOverlay(all);
+    }
+    return data;
+  }
+
+  /** Drop this page's overlay entries for these node ids (their line turned out different). */
+  function forgetEntries(ids) {
+    var all = loadOverlay(), here = page(), mine = own(all, here);
+    if (!mine) return;
+    ids.forEach(function (id) { delete mine[id]; });
+    if (!Object.keys(mine).length) delete all[here];
+    saveOverlay(all);
+  }
+
+  function idb(run) {
+    return new Promise(function (resolve, reject) {
+      var open = indexedDB.open(DB.name, 1);
+      open.onupgradeneeded = function () { open.result.createObjectStore(DB.store); };
+      open.onerror = function () { reject(open.error); };
+      open.onsuccess = function () {
+        var db = open.result, tx, req;
+        try {
+          tx = db.transaction(DB.store, "readwrite");
+          req = run(tx.objectStore(DB.store));
+        } catch (e) {  // e.g. a value that cannot be stored
+          db.close();
+          reject(e);
+          return;
+        }
+        tx.oncomplete = function () { db.close(); resolve(req.result); };
+        tx.onerror = tx.onabort = function () { db.close(); reject(tx.error); };
+      };
+    });
+  }
+
+  function loadHandle() {
+    return idb(function (store) { return store.get(DB.key); }).then(function (saved) {
+      return saved && saved.page === page() && saved.handle ? saved.handle : null;
+    }, function () { return null; });
+  }
+
+  function saveHandle(handle) {
+    return idb(function (store) { return store.put({ page: page(), handle: handle }, DB.key); })
+      .catch(function () { /* not remembered: the folder is asked for again next time */ });
+  }
+
+  function forgetHandle() {
+    return idb(function (store) { return store.delete(DB.key); }).catch(function () {});
+  }
+
+  // ---- the page ----
+
+  var COPY = "copy";
+  var mode = "", busy = false, toast = null, toastTimer = 0;
+
+  /** Buttons of one '.status-buttons' slot; a node without a line to change keeps it empty (hidden). */
+  function fill(slot) {
+    slot.dataset.filled = "1";
+    var found = KG.nodeOf(slot.dataset.node), node = found && found.node;
+    if (!node || !node.edit) return;
+    var copying = mode === COPY;
+    slot.classList.toggle("sb-copy", copying);
+    slot.innerHTML = (copying ? '<span class="sb-hint">复制这句话：</span>' : "") + choices(node.edit).map(function (s) {
+      var on = current(node) === s, tip = copying ? copyLine(node, s) : "改成" + s;
+      return '<button type="button" class="sb' + (on ? " on" : "") + '" data-status="' + KG.esc(s) + '" aria-pressed="'
+        + on + '" title="' + KG.esc(tip) + '">' + KG.esc(s) + "</button>";
+    }).join("");
+  }
+
+  function fillAll() {
+    if (typeof KG === "undefined") return;
+    document.querySelectorAll(".status-buttons:not([data-filled])").forEach(fill);
+  }
+
+  /** Toast with optional buttons: actions = [{label, run}]. say("") hides it. */
+  function say(text, actions) {
+    actions = actions || [];
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.className = "status-toast";
+      toast.setAttribute("role", "status");
+      document.body.appendChild(toast);
+    }
+    toast.textContent = text;
+    actions.forEach(function (action) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "status-toast-act";
+      button.textContent = action.label;
+      button.addEventListener("click", function () { action.run(); });
+      toast.appendChild(button);
+    });
+    toast.hidden = !text;
+    clearTimeout(toastTimer);
+    if (text) toastTimer = setTimeout(function () { toast.hidden = true; }, actions.length ? TOAST_LONG_MS : TOAST_MS);
+  }
+
+  var CHANGE_FOLDER = { label: "换文件夹", run: function () { forgetHandle().then(function () { say(SAY.forgot); }); } };
+
+  function setBusy(on) {
+    busy = on;
+    document.body.classList.toggle("kg-writing", on);
+  }
+
+  function useCopy() {
+    mode = COPY;
+    document.querySelectorAll(".status-buttons[data-filled]").forEach(function (slot) { delete slot.dataset.filled; });
+    fillAll();
+  }
+
+  function copyText(text) {
+    var clip = navigator.clipboard;
+    var tried = clip && clip.writeText ? clip.writeText(text) : Promise.reject(new Error("no clipboard"));
+    return tried.catch(function () {  // no clipboard access: the old way
+      var area = document.createElement("textarea");
+      area.value = text;
+      document.body.appendChild(area);
+      area.select();
+      var done = document.execCommand("copy");
+      area.remove();
+      if (!done) throw new Error("copy");
+    });
+  }
+
+  /** Copy the line for Claude; when copying fails, show it long enough to copy by hand. */
+  function copy(node, status) {
+    var line = copyLine(node, status);
+    return copyText(line).then(function () { say(SAY.copied); },
+      function () { say(line, [{ label: "关闭", run: function () { say(""); } }]); });
+  }
+
+  /** The remembered folder with write access, a newly picked one, COPY when access is refused, or
+   *  null (picking cancelled, or not this page's knowledge base: already said). */
+  async function folder() {
+    var root = await loadHandle();
+    if (!root) {
+      say(SAY.pick);
+      try {
+        root = await window.showDirectoryPicker({ mode: "readwrite" });
+      } catch (e) {
+        if (e && e.name === "AbortError") { say(""); return null; }
+        return COPY;
+      }
+      var want = pageFolder(page());
+      if (!(await looksLikeKb(root, want))) {
+        say("这不是这个页面所在的 " + (want || "知识库") + " 文件夹，没有改");
+        return null;
+      }
+      await saveHandle(root);
+    }
+    var state = await root.queryPermission({ mode: "readwrite" });
+    if (state !== "granted") state = await root.requestPermission({ mode: "readwrite" }).catch(function () { return "denied"; });
+    return state === "granted" ? root : COPY;
+  }
+
+  /** Nodes in any graph showing the same file line as node (a note hung under two topics). */
+  function sameLine(node) {
+    var edit = node.edit, same = [], graphs = KG.data().graphs || {};
+    Object.keys(graphs).forEach(function (name) {
+      var nodes = graphs[name].nodes || {};
+      Object.keys(nodes).forEach(function (id) {
+        var other = nodes[id].edit;
+        if (other && other.file === edit.file && other.line === edit.line) same.push(nodes[id]);
+      });
+    });
+    return same;
+  }
+
+  /** After a write: new status on the nodes, overlay entries kept from the line the page was built with
+   *  (an entry back at that line is dropped), then repaint. Never throws: the file is written. */
+  function saved(node, status, before, raw) {
+    var shown = true;
+    try {
+      var same = sameLine(node), all = loadOverlay(), here = page(), mine = own(all, here) || (all[here] = {});
+      var built = KG.data().generatedAt;
+      same.forEach(function (other) {
+        var prev = own(mine, other.id), chained = prev && prev.raw === before && prev.generatedAt === built;
+        var from = chained ? prev.from : before;
+        setStatus(other, status, raw);
+        if (from === raw) delete mine[other.id];
+        else mine[other.id] = { status: status, from: from, raw: raw, generatedAt: built };
+      });
+      if (!Object.keys(mine).length) delete all[here];
+      saveOverlay(all);
+      same.forEach(function (other) { KG.refresh(other.id); });
+      if (typeof Reader !== "undefined") Reader.refresh();
+    } catch (e) {
+      shown = false;
+    }
+    say("已改成 " + status + (shown ? "" : "（刷新后显示）"), [CHANGE_FOLDER]);
+  }
+
+  function refused(node, status, reason) {
+    if (reason === "unchanged") say("");
+    else if (reason === "changed" || reason === "missing") {
+      // an entry made from this line no longer matches the file: refreshing must show the file again
+      forgetEntries(sameLine(node).map(function (other) { return other.id; }));
+      say(SAY.changed, [CHANGE_FOLDER]);
+    }
+    else say(SAY.manual, [{ label: "复制这句话", run: function () { copy(node, status); } }]);
+  }
+
+  async function change(node, status) {
+    if (busy) { say(SAY.busy); return; }
+    if (mode === COPY) { await copy(node, status); return; }
+    if (current(node) === status) return;
+    setBusy(true);
+    try {
+      var root = await folder();
+      if (root === COPY) {
+        useCopy();
+        await copy(node, status);
+      } else if (root) {
+        say(SAY.busy);
+        var before = node.edit.raw, result = await writeStatus(root, node.edit, status);
+        if (result.ok) saved(node, status, before, result.raw);
+        else refused(node, status, result.reason);
+      }
+    } catch (e) {
+      say("没改成：" + ((e && e.message) || e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function onClick(e) {
+    var button = e.target.closest && e.target.closest(".status-buttons button[data-status]");
+    if (!button) return;
+    e.preventDefault();
+    var found = KG.nodeOf(button.closest(".status-buttons").dataset.node);
+    if (found && found.node.edit) change(found.node, button.dataset.status);
+  }
+
+  function mount() {
+    mode = typeof window.showDirectoryPicker === "function" ? "" : COPY;
+    new MutationObserver(fillAll).observe(document.body, { childList: true, subtree: true });
+    document.addEventListener("click", onClick);
+  }
+
+  if (typeof document !== "undefined" && document.getElementById("kg-data")) mount();
+
+  return {
+    rewriteStatus: rewriteStatus, applyOverlay: applyOverlay, copyLine: copyLine, choices: choices, pageFolder: pageFolder,
+    current: current, writeStatus: writeStatus, looksLikeKb: looksLikeKb, overlayData: overlayData, forgetEntries: forgetEntries,
+  };
+})();
+if (typeof module !== "undefined") module.exports = Status;
+// Entry page: collapsible tree + drill-down knowledge graph (three levels on screen), linked both ways.
+// Pure layout helpers are exported for tests and for the reading page's mini graph.
+var KG = (function () {
+  "use strict";
+
+  var RADIUS = { "-1": 12, 0: 24, 1: 15, 2: 6 };
+  var HUES = ["#3370ff", "#14a37f", "#f08a24", "#8b5cf6", "#e2557a", "#0ea5c6"];
+  var ROOT_HUE = "var(--accent)";
+  // collision room around a dot: only keeps dots apart in motion; label room comes from the targets,
+  // which never put two dots closer than their collision sizes
+  var PAD = { "-1": 6, 0: 10, 1: 8, 2: 5 };
+  var LEVEL_CLASS = { "-1": "kg-lup", 0: "kg-l0", 1: "kg-l1", 2: "kg-l2" };
+  var LABEL_MAX = { "-1": 12, 0: 24, 1: 14, 2: 10 };
+  // wanted distance between neighbouring grandchildren in one fan row: more when the fan points up or
+  // down, because then their labels sit side by side
+  var FAN_GAP = 30, FAN_LABEL_GAP = 46;
+  var LABEL_HALF = { 1: 40, 2: 30 };  // about half a label's width, kept inside the stage
+  // per 1/60 s; the step decays at the same rate per second at any frame rate, so slow frames (up to
+  // 15 fps) are taken in one step instead of slowing the motion down
+  var SPRING = 0.13, FRICTION = 0.66, PUSH = 0.35, REST_SPEED = 0.1, MAX_DT = 4;
+  // the layout is computed on at least this canvas and shown zoomed out on a smaller one, so a small
+  // stage never squeezes dots together
+  var LAYOUT_MIN = { w: 640, h: 580 };
+  var STATUS_CHIP = { "已掌握": "ok", "学习中": "doing" };
+
+  // ---- pure helpers ----
+
+  /** Nodes on screen around centerId: parent ghost (-1), centre (0), children (1), grandchildren (2). */
+  function visibleWindow(graph, centerId) {
+    var nodes = graph.nodes, center = nodes[centerId], win = { nodes: [], links: [] };
+    if (center.parent && nodes[center.parent]) {
+      win.nodes.push({ id: center.parent, lvl: -1 });
+      win.links.push({ a: center.parent, b: centerId, kind: "up" });
+    }
+    win.nodes.push({ id: centerId, lvl: 0 });
+    center.children.forEach(function (kid) {
+      win.nodes.push({ id: kid, lvl: 1 });
+      win.links.push({ a: centerId, b: kid, kind: "c1" });
+      nodes[kid].children.forEach(function (grandkid) {
+        win.nodes.push({ id: grandkid, lvl: 2 });
+        win.links.push({ a: kid, b: grandkid, kind: "c2" });
+      });
+    });
+    return win;
+  }
+
+  function clamp(value, low, high) {
+    return Math.max(low, Math.min(high, value));
+  }
+
+  /** Target point of every window node: centre in the middle, children on an ellipse, each child's
+   *  children in a small fan outside it, the parent ghost up-left. All kept inside width x height. */
+  function targets(win, graph, width, height) {
+    var cx = width / 2, cy = height / 2, scale = clamp(Math.min(width / 720, height / 540), 0.5, 1.3);
+    var rx = width * 0.3, ry = height * 0.28, out = {}, start = -Math.PI / 2;
+    var kids = win.nodes.filter(function (n) { return n.lvl === 1; });
+    win.nodes.forEach(function (n) {
+      if (n.lvl === 0) out[n.id] = { x: cx, y: cy };
+      if (n.lvl !== -1) return;
+      out[n.id] = { x: cx - 250 * scale, y: cy - 175 * scale };
+      start = Math.atan2(-175 * scale / ry, -250 * scale / rx);  // the ghost's line falls between two children
+    });
+    var slot = 2 * Math.PI / Math.max(kids.length, 1), crowded = kids.length > 12;
+    kids.forEach(function (kid, i) {
+      var angle = start + (i + 0.5) * slot, ring = crowded && i % 2 ? 0.78 : 1;  // many: two rings
+      var kx = cx + rx * ring * Math.cos(angle), ky = cy + ry * ring * Math.sin(angle);
+      out[kid.id] = { x: kx, y: ky };
+      fan(out, graph.nodes[kid.id].children, kx, ky, angle, slot, scale);
+    });
+    fit(out, win, width, height);
+    win.nodes.forEach(function (n) {
+      var margin = RADIUS[n.lvl] + 4, p = out[n.id];
+      p.x = clamp(p.x, margin, width - margin);
+      p.y = clamp(p.y, margin, height - margin - 14);  // room for the label under the dot
+    });
+    return out;
+  }
+
+  /** A child's children in a fan outside it, using up to most of the child's slot. From 4 on they
+   *  alternate between two rows (labels don't collide) and reach further so neighbours in a row keep
+   *  their gap; small fans are flattened like the prototype's. */
+  function fan(out, ids, kx, ky, angle, slot, scale) {
+    var count = ids.length, rows = count >= 4 ? 2 : 1, perRow = Math.ceil(count / rows);
+    var spread = Math.min(0.42 * (count - 1), Math.max(1.3, 0.9 * slot));
+    var gap = FAN_GAP + FAN_LABEL_GAP * Math.abs(Math.sin(angle));
+    var reach = Math.min(Math.max(95 * scale, spread ? gap * (perRow - 1) / spread : 0), 200 * scale);
+    var flat = count > 3 ? 1 : 0.72;
+    ids.forEach(function (id, j) {
+      var b = count === 1 ? angle : angle - spread / 2 + j * spread / (count - 1);
+      var r = reach * (rows > 1 && j % 2 ? 1.3 : 1);
+      out[id] = { x: kx + r * Math.cos(b), y: ky + r * flat * Math.sin(b) };
+    });
+  }
+
+  /** Squeeze the layout towards the centre when dots and their labels would stick out of the stage,
+   *  but never so far that two dots end up closer than their collision sizes. */
+  function fit(out, win, width, height) {
+    var cx = width / 2, cy = height / 2, ex = 1, ey = 1, floor = 0, nodes = win.nodes;
+    nodes.forEach(function (n) {
+      var p = out[n.id], r = RADIUS[n.lvl];
+      ex = Math.max(ex, Math.abs(p.x - cx) + r + (LABEL_HALF[n.lvl] || 0));
+      ey = Math.max(ey, Math.abs(p.y - cy) + r + 18);
+    });
+    var sx = Math.min(1, (cx - 6) / ex), sy = Math.min(1, (cy - 6) / ey);
+    if (sx === 1 && sy === 1) return;
+    for (var i = 0; i < nodes.length; i++) {
+      for (var j = i + 1; j < nodes.length; j++) {
+        var a = out[nodes[i].id], b = out[nodes[j].id], d = Math.hypot(a.x - b.x, a.y - b.y);
+        floor = Math.max(floor, (collisionSize(nodes[i].lvl) + collisionSize(nodes[j].lvl)) / (d || 1));
+      }
+    }
+    sx = Math.min(1, Math.max(sx, floor));
+    sy = Math.min(1, Math.max(sy, floor));
+    win.nodes.forEach(function (n) {
+      out[n.id].x = cx + (out[n.id].x - cx) * sx;
+      out[n.id].y = cy + (out[n.id].y - cy) * sy;
+    });
+  }
+
+  function collisionSize(lvl) {
+    return RADIUS[lvl] + PAD[lvl];
+  }
+
+  /** One animation frame (dt in 1/60 s): spring towards the target, push overlapping dots apart,
+   *  damp. Changes pos and vel in place; only ids that have a target move. */
+  function step(pos, vel, tgt, radii, dt) {
+    var ids = Object.keys(tgt).filter(function (id) { return pos[id]; });
+    ids.forEach(function (id) {
+      var v = vel[id] || (vel[id] = { x: 0, y: 0 });
+      v.x += (tgt[id].x - pos[id].x) * SPRING * dt;
+      v.y += (tgt[id].y - pos[id].y) * SPRING * dt;
+    });
+    for (var i = 0; i < ids.length; i++) {
+      for (var j = i + 1; j < ids.length; j++) {
+        var a = pos[ids[i]], b = pos[ids[j]], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
+        var least = (radii[ids[i]] || 0) + (radii[ids[j]] || 0);
+        if (d >= least) continue;
+        if (d < 1e-6) {  // stacked: separate along a fixed direction per pair
+          dx = Math.cos(i * 2.39996 + j); dy = Math.sin(i * 2.39996 + j); d = 1;
+        }
+        var push = (least - d) / d * PUSH * dt / 2, va = vel[ids[i]], vb = vel[ids[j]];
+        va.x -= dx * push; va.y -= dy * push; vb.x += dx * push; vb.y += dy * push;
+      }
+    }
+    var keep = Math.pow(FRICTION, dt);
+    ids.forEach(function (id) {
+      var v = vel[id];
+      v.x *= keep; v.y *= keep;
+      pos[id].x += v.x * dt; pos[id].y += v.y * dt;
+    });
+  }
+
+  /** "要先懂" edges (a must be understood before b) between two window nodes that are not the ghost. */
+  function preLinks(win, graph) {
+    var shown = {}, seen = {}, out = [];
+    win.nodes.forEach(function (n) { if (n.lvl >= 0) shown[n.id] = true; });
+    win.nodes.forEach(function (n) {
+      if (n.lvl < 0) return;
+      (graph.nodes[n.id].prereqs || []).forEach(function (p) {
+        var key = p + "\n" + n.id;
+        if (shown[p] && p !== n.id && !seen[key]) {
+          seen[key] = true;
+          out.push({ a: p, b: n.id });
+        }
+      });
+    });
+    return out;
+  }
+
+  /** What the reading page's mini graph draws around one node (ids may live in another graph). */
+  function neighborhood(graph, nodeId) {
+    var node = graph.nodes[nodeId];
+    return { self: nodeId, parent: node.parent || null, prereqs: (node.prereqs || []).slice(),
+             next: (node.next || []).slice() };
+  }
+
+  function hueOf(node) {
+    return node.block >= 0 ? HUES[node.block % HUES.length] : ROOT_HUE;
+  }
+
+  function shortName(name) {
+    return name.split(" · ")[0];
+  }
+
+  /** Readable text from a markdown snippet (summaries): drop emphasis and code marks, keep link text. */
+  function plain(md) {
+    return String(md).replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/\*\*|__|`/g, "");
+  }
+
+  function esc(text) {
+    return String(text).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  /** SVG markup of a dot of radius r drawn at the origin: full, half, empty or dashed (colour = --h). */
+  function shapeMarkup(shape, r, width) {
+    var sw = ' stroke-width="' + width + '"';
+    if (shape === "full") return '<circle class="kg-body kg-full" r="' + r + '"' + sw + "/>";
+    var ring = '<circle class="kg-body kg-ring' + (shape === "dashed" ? " kg-dash" : "") + '" r="' + r + '"' + sw + "/>";
+    if (shape !== "half") return ring;
+    return ring + '<path class="kg-half" d="M0 ' + (-r) + " A" + r + " " + r + " 0 0 1 0 " + r + ' Z"/>';
+  }
+
+  /** Small status dot (tree rows, cards, the reading page): block colour, shape = mastery. */
+  function iconSvg(node, size) {
+    size = size || 12;
+    var half = size / 2;
+    return '<svg class="kg-ic" width="' + size + '" height="' + size + '" viewBox="' + (-half) + " " + (-half) + " "
+      + size + " " + size + '" style="--h:' + hueOf(node) + '">' + shapeMarkup(node.shape, half - 1, 1.5) + "</svg>";
+  }
+
+  function isLeaf(node) {
+    return node.kind === "point" || !node.children.length;
+  }
+
+  function storage(key, value) {
+    try {
+      if (value === undefined) return window.sessionStorage.getItem(key);
+      if (value === null) window.sessionStorage.removeItem(key);
+      else window.sessionStorage.setItem(key, value);
+    } catch (e) { /* storage blocked: focus just isn't remembered */ }
+    return null;
+  }
+
+  function curve(s, t, bend) {
+    var mx = (s.x + t.x) / 2, my = (s.y + t.y) / 2, dx = t.x - s.x, dy = t.y - s.y;
+    return "M" + s.x + "," + s.y + " Q" + (mx - dy * bend) + "," + (my + dx * bend) + " " + t.x + "," + t.y;
+  }
+
+  // ---- one graph on the page ----
+
+  var SVG_NS = "http://www.w3.org/2000/svg";
+  var views = [], data = null;
+
+  function View(el, graph, index) {
+    this.el = el;
+    this.graph = graph;
+    this.name = el.dataset.graph;
+    this.index = index;
+    this.tree = el.querySelector(".kg-tree");
+    this.stage = el.querySelector(".kg-stage");
+    this.bar = el.querySelector(".kg-bar");
+    this.svg = el.querySelector(".kg-svg");
+    this.card = el.querySelector(".kg-card");
+    this.center = graph.root;
+    this.leaf = null;
+    this.ready = false;
+    this.w = this.h = 0;
+    this.pos = {}; this.vel = {}; this.tgt = {}; this.radii = {}; this.lvl = {};
+    this.links = []; this.pre = [];
+    this.nodeEls = {}; this.linkEls = []; this.preEls = [];
+    this.zoom = { k: 1, x: 0, y: 0 };
+    this.raf = 0; this.last = 0; this.drag = null; this.rows = {}; this.cardId = null;
+  }
+
+  /** Take the stage size; false (keeping the last size) while the pane is hidden. */
+  View.prototype.measure = function () {
+    var box = this.svg.getBoundingClientRect(), w = Math.round(box.width), h = Math.round(box.height);
+    if (!w || !h) return false;
+    this.w = w;
+    this.h = h;
+    this.lw = Math.max(w, LAYOUT_MIN.w);
+    this.lh = Math.max(h, LAYOUT_MIN.h);
+    this.svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+    return true;
+  };
+
+  /** Default view: the whole layout canvas, centred, zoomed out if the stage is smaller. */
+  View.prototype.fitZoom = function () {
+    var k = Math.min(1, this.w / this.lw, this.h / this.lh);
+    this.zoom = { k: k, x: (this.w - this.lw * k) / 2, y: (this.h - this.lh * k) / 2 };
+    this.svg.style.setProperty("--lz", (1 / Math.sqrt(k)).toFixed(3));  // labels shrink less than the layout
+    this.applyZoom();
+  };
+
+  View.prototype.visible = function () {
+    return this.stage.getClientRects().length > 0 && this.stage.clientWidth > 0;
+  };
+
+  /** Draw the first time the pane has a size (panes start hidden). */
+  View.prototype.ensureReady = function () {
+    if (!this.ready && this.measure()) {
+      this.setup();
+      this.ready = true;
+      this.go(this.center, null);
+    }
+    return this.ready;
+  };
+
+  View.prototype.resized = function () {
+    if (!this.ready) return this.ensureReady();
+    if (!this.measure()) return this.stop();
+    this.tgt = targets(this.win, this.graph, this.lw, this.lh);
+    this.fitZoom();
+    this.drawBar();
+    this.kick();
+  };
+
+  View.prototype.setup = function () {
+    var self = this, marker = "kg-arrow-" + this.index;
+    this.svg.innerHTML = '<defs><marker id="' + marker + '" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" '
+      + 'markerHeight="7" orient="auto"><path d="M0,0L8,4L0,8" class="kg-arrow"/></marker></defs>'
+      + '<g class="kg-world"><g class="kg-links"></g><g class="kg-pre"></g><g class="kg-nodes"></g></g>';
+    this.marker = marker;
+    this.world = this.svg.querySelector(".kg-world");
+    this.linkLayer = this.svg.querySelector(".kg-links");
+    this.preLayer = this.svg.querySelector(".kg-pre");
+    this.nodeLayer = this.svg.querySelector(".kg-nodes");
+    this.bar.innerHTML = '<button class="kg-back" type="button">← 上一层</button><nav class="kg-crumb"></nav>'
+      + '<label class="kg-pre-toggle" title="一直显示&quot;要先懂&quot;"><input type="checkbox"> 显示要先懂</label>';
+    this.bar.querySelector(".kg-back").addEventListener("click", function () { self.up(); });
+    this.bar.querySelector("input").addEventListener("change", function (e) {
+      self.el.classList.toggle("pre-on", e.target.checked);
+    });
+    this.bar.querySelector(".kg-crumb").addEventListener("click", function (e) {
+      var a = e.target.closest("a[data-id]");
+      if (a) { e.preventDefault(); self.leaf = null; self.go(a.dataset.id, null); }
+    });
+    // card and legend live in a fixed footer under the svg, so they never cover a dot or a label
+    var foot = document.createElement("div"), legend = document.createElement("div");
+    foot.className = "kg-foot";
+    legend.className = "kg-legend";
+    legend.innerHTML = ["full", "half", "empty", "dashed"].map(function (shape, i) {
+      return "<span>" + iconSvg({ block: -1, shape: shape }) + ["已掌握", "学习中", "没碰", "空白"][i] + "</span>";
+    }).join("") + "<span>颜色 = 属于哪一块</span><span>橙色虚线 = 要先懂</span>";
+    foot.appendChild(this.card);
+    foot.appendChild(legend);
+    this.stage.appendChild(foot);
+    this.card.addEventListener("click", function (e) { self.cardClick(e); });
+    this.buildTree();
+    this.bindPointer();
+  };
+
+  /** Make id the centre. from: the node whose position new dots grow out of (the clicked one). */
+  View.prototype.go = function (id, from) {
+    var self = this, old = this.pos, origin = old[from || id] || { x: this.lw / 2, y: this.lh / 2 };
+    this.center = id;
+    this.win = visibleWindow(this.graph, id);
+    this.tgt = targets(this.win, this.graph, this.lw, this.lh);
+    this.links = this.win.links;
+    this.pre = preLinks(this.win, this.graph);
+    this.pos = {}; this.vel = {}; this.radii = {}; this.lvl = {};
+    this.win.nodes.forEach(function (n, i) {
+      var p = old[n.id], jitter = 6 * (i % 3 + 1), turn = i * 2.39996;
+      self.pos[n.id] = p ? { x: p.x, y: p.y }
+        : { x: origin.x + jitter * Math.cos(turn), y: origin.y + jitter * Math.sin(turn) };
+      self.vel[n.id] = { x: 0, y: 0 };
+      self.radii[n.id] = collisionSize(n.lvl);
+      self.lvl[n.id] = n.lvl;
+    });
+    if (this.leaf && !(this.lvl[this.leaf] > 0)) this.leaf = null;
+    this.drawNodes();
+    this.drawLinks();
+    this.fitZoom();
+    this.drawBar();
+    this.markTree();
+    this.showCard(this.leaf || id);
+    storage("kg-focus", this.leaf || id);
+    this.draw();
+    this.kick();
+  };
+
+  View.prototype.drawNodes = function () {
+    var self = this, entering = [];
+    Object.keys(this.nodeEls).forEach(function (id) {
+      if (id in self.lvl) return;
+      var gone = self.nodeEls[id];
+      delete self.nodeEls[id];
+      gone.classList.add("kg-out");
+      setTimeout(function () { gone.remove(); }, 400);
+    });
+    this.win.nodes.forEach(function (n) {
+      var g = self.nodeEls[n.id];
+      if (!g) {
+        g = self.nodeEls[n.id] = document.createElementNS(SVG_NS, "g");
+        g.dataset.id = n.id;
+        g.classList.add("kg-in");
+        self.nodeLayer.appendChild(g);
+        entering.push(g);
+        g.addEventListener("pointerenter", function () { self.hover(g.dataset.id); });
+        g.addEventListener("pointerleave", function () { self.hover(null); });
+      }
+      self.paintNode(g, self.graph.nodes[n.id], n.lvl);
+    });
+    if (entering.length) {
+      this.svg.getBoundingClientRect();  // commit opacity 0 so the fade-in transition runs
+      entering.forEach(function (g) { g.classList.remove("kg-in"); });
+    }
+  };
+
+  View.prototype.paintNode = function (g, node, lvl) {
+    var r = RADIUS[lvl], name = shortName(node.name), max = LABEL_MAX[lvl];
+    var label = (lvl === -1 ? "↩ " : "") + (name.length > max ? name.slice(0, max) + "…" : name);
+    var shape = lvl === -1 ? "empty" : node.shape;
+    var dy = lvl === 0 ? r + 20 : r + (lvl === 2 ? 13 : 17);
+    var halo = lvl === 0 ? '<circle class="kg-halo" r="' + (r + 7) + '"/>' : "";  // marks the centre
+    g.setAttribute("class", "kg-node " + LEVEL_CLASS[lvl] + (lvl === -1 ? " kg-ghost" : "")
+      + (node.id === this.leaf ? " kg-picked" : "") + (g.classList.contains("kg-in") ? " kg-in" : ""));
+    g.style.setProperty("--h", hueOf(node));
+    g.innerHTML = "<title>" + esc(node.name) + "</title>" + halo
+      + shapeMarkup(shape, r, lvl === 0 ? 2.5 : lvl === 2 ? 1.5 : 2.2)
+      + '<text class="kg-lbl" dy="' + dy + '">' + esc(label) + "</text>";
+  };
+
+  View.prototype.drawLinks = function () {
+    var self = this;
+    this.linkLayer.textContent = "";
+    this.preLayer.textContent = "";
+    this.linkEls = this.links.map(function (l) {
+      var path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("class", "kg-link " + l.kind);
+      return self.linkLayer.appendChild(path);
+    });
+    this.preEls = this.pre.map(function (l) {
+      var path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("marker-end", "url(#" + self.marker + ")");
+      return self.preLayer.appendChild(path);
+    });
+  };
+
+  /** Move dots and lines to the current positions. */
+  View.prototype.draw = function () {
+    var pos = this.pos, self = this;
+    Object.keys(this.nodeEls).forEach(function (id) {
+      var p = pos[id];
+      if (p) self.nodeEls[id].setAttribute("transform", "translate(" + p.x.toFixed(1) + "," + p.y.toFixed(1) + ")");
+    });
+    this.links.forEach(function (l, i) {
+      self.linkEls[i].setAttribute("d", curve(pos[l.a], pos[l.b], l.kind === "c2" ? 0.08 : 0.04));
+    });
+    this.pre.forEach(function (l, i) {
+      var a = pos[l.a], b = pos[l.b], dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1;
+      var cut = RADIUS[self.lvl[l.b]] + 5;
+      self.preEls[i].setAttribute("d", curve(a, { x: b.x - dx / len * cut, y: b.y - dy / len * cut }, 0.18));
+    });
+  };
+
+  View.prototype.kick = function () {
+    var self = this;
+    if (this.raf || !this.ready || !this.visible()) return;
+    this.last = 0;
+    this.raf = requestAnimationFrame(function tick(now) {
+      self.raf = 0;
+      if (!self.visible()) return;
+      var dt = self.last ? Math.min((now - self.last) / (1000 / 60), MAX_DT) : 1;
+      self.last = now;
+      step(self.pos, self.vel, self.tgt, self.radii, dt);
+      var held = self.drag && self.drag.moved && self.drag.id;
+      if (held) {
+        self.pos[held] = { x: self.drag.at.x, y: self.drag.at.y };
+        self.vel[held] = { x: 0, y: 0 };
+      }
+      self.draw();
+      var fastest = 0;
+      Object.keys(self.vel).forEach(function (id) { fastest = Math.max(fastest, Math.hypot(self.vel[id].x, self.vel[id].y)); });
+      if (fastest > REST_SPEED || held) self.raf = requestAnimationFrame(tick);
+    });
+  };
+
+  View.prototype.stop = function () {
+    if (this.raf) cancelAnimationFrame(this.raf);
+    this.raf = 0;
+  };
+
+  View.prototype.applyZoom = function () {
+    var z = this.zoom;
+    this.world.setAttribute("transform", "translate(" + z.x + "," + z.y + ") scale(" + z.k + ")");
+  };
+
+  /** Hovering a dot keeps it, its neighbours and its "要先懂" lines lit; null clears. */
+  View.prototype.hover = function (id) {
+    if (this.drag && this.drag.moved) return;
+    var near = {};
+    if (id) {
+      near[id] = true;
+      this.links.concat(this.pre).forEach(function (l) {
+        if (l.a === id) near[l.b] = true;
+        if (l.b === id) near[l.a] = true;
+      });
+    }
+    var self = this;
+    Object.keys(this.nodeEls).forEach(function (n) { self.nodeEls[n].classList.toggle("kg-faded", !!id && !near[n]); });
+    this.links.forEach(function (l, i) { self.linkEls[i].classList.toggle("kg-faded", !!id && l.a !== id && l.b !== id); });
+    this.pre.forEach(function (l, i) { self.preEls[i].classList.toggle("kg-on", !!id && (l.a === id || l.b === id)); });
+  };
+
+  View.prototype.bindPointer = function () {
+    var self = this, svg = this.svg;
+    function toWorld(e) {
+      var box = svg.getBoundingClientRect(), z = self.zoom;
+      return { x: (e.clientX - box.left - z.x) / z.k, y: (e.clientY - box.top - z.y) / z.k };
+    }
+    svg.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0) return;
+      var g = e.target.closest(".kg-node");
+      self.drag = { id: g && !g.classList.contains("kg-out") ? g.dataset.id : null, sx: e.clientX, sy: e.clientY,
+                    zx: self.zoom.x, zy: self.zoom.y, moved: false, at: null };
+    });
+    svg.addEventListener("pointermove", function (e) {
+      var d = self.drag;
+      if (!d) return;
+      if (!e.buttons) {  // released outside: no pointerup reached us
+        self.drag = null;
+        svg.classList.remove("kg-grabbing");
+        return;
+      }
+      var dx = e.clientX - d.sx, dy = e.clientY - d.sy;
+      if (!d.moved && Math.hypot(dx, dy) < 4) return;
+      if (!d.moved) {  // capture only once it is a drag, so a plain click keeps the hover
+        d.moved = true;
+        self.hover(null);
+        svg.setPointerCapture(e.pointerId);
+        svg.classList.add("kg-grabbing");
+      }
+      if (d.id) {
+        d.at = toWorld(e);
+        self.kick();
+      } else {
+        self.zoom.x = d.zx + dx;
+        self.zoom.y = d.zy + dy;
+        self.applyZoom();
+      }
+    });
+    function release() {
+      var d = self.drag;
+      self.drag = null;
+      svg.classList.remove("kg-grabbing");
+      if (d && !d.moved && d.id) self.clickNode(d.id);
+      else if (d && d.id) self.kick();  // let the dragged dot spring back
+    }
+    svg.addEventListener("pointerup", release);
+    svg.addEventListener("pointercancel", function () { self.drag = null; svg.classList.remove("kg-grabbing"); });
+    svg.addEventListener("wheel", function (e) {
+      e.preventDefault();
+      var box = svg.getBoundingClientRect(), z = self.zoom, mx = e.clientX - box.left, my = e.clientY - box.top;
+      var k = clamp(z.k * Math.exp(-e.deltaY * 0.0015), 0.3, 2.5);
+      z.x = mx - (mx - z.x) * k / z.k;
+      z.y = my - (my - z.y) * k / z.k;
+      z.k = k;
+      self.applyZoom();
+    }, { passive: false });
+  };
+
+  View.prototype.clickNode = function (id) {
+    var lvl = this.lvl[id], node = this.graph.nodes[id];
+    if (lvl === -1) { this.leaf = null; this.go(id, id); return; }
+    if (lvl === 0) { this.pick(null); return; }
+    if (isLeaf(node)) { this.pick(id); return; }
+    this.leaf = null;
+    this.go(id, id);
+  };
+
+  View.prototype.up = function () {
+    var parent = this.graph.nodes[this.center].parent;
+    if (!parent) return;
+    this.leaf = null;
+    this.go(parent, parent);
+  };
+
+  /** Select a leaf on screen (null: back to the centre): highlight it, show its card, remember it. */
+  View.prototype.pick = function (id) {
+    var prev = this.leaf;
+    this.leaf = id;
+    if (prev && this.nodeEls[prev]) this.nodeEls[prev].classList.remove("kg-picked");
+    if (id && this.nodeEls[id]) this.nodeEls[id].classList.add("kg-picked");
+    this.markTree();
+    this.showCard(id || this.center);
+    storage("kg-focus", id || this.center);
+  };
+
+  /** Centre on id; a leaf centres on its parent (unless already on screen) and gets its card. */
+  View.prototype.focus = function (id) {
+    var node = this.graph.nodes[id];
+    var leaf = isLeaf(node) && node.parent ? id : null;
+    if (!this.ensureReady()) {  // pane still hidden: remember for the first draw
+      this.leaf = leaf;
+      this.center = leaf ? node.parent : id;
+      return;
+    }
+    if (!leaf) { this.leaf = null; this.go(id, null); return; }
+    if (!(this.lvl[id] > 0)) { this.leaf = null; this.go(node.parent, null); }
+    this.pick(id);
+  };
+
+  /** Repaint one node after its status changed: dot, tree icon and the card if it shows the node. */
+  View.prototype.refresh = function (id) {
+    var node = this.graph.nodes[id];
+    if (!node || !this.ready) return;
+    if (this.nodeEls[id]) this.paintNode(this.nodeEls[id], node, this.lvl[id]);
+    var icon = this.rows[id] && this.rows[id].querySelector(".kg-ic");
+    if (icon) icon.outerHTML = iconSvg(node);
+    if (this.cardId === id) this.showCard(id);
+  };
+
+  // ---- bar, card, tree ----
+
+  View.prototype.drawBar = function () {
+    var nodes = this.graph.nodes, chain = [];
+    for (var id = this.center; id; id = nodes[id].parent) chain.unshift(id);
+    this.bar.querySelector(".kg-back").disabled = chain.length < 2;
+    var crumb = this.bar.querySelector(".kg-crumb");
+    for (var drop = 0; drop < chain.length; drop++) {  // keep the last levels; the oldest go behind "…"
+      crumb.innerHTML = (drop ? '<span class="kg-more">…</span><span class="sep">›</span>' : "")
+        + chain.slice(drop).map(function (id, i, shown) {
+          var name = esc(shortName(nodes[id].name));
+          return i === shown.length - 1 ? "<b>" + name + "</b>"
+            : '<a href="#" data-id="' + esc(id) + '">' + name + "</a>";
+        }).join('<span class="sep">›</span>');
+      if (crumb.scrollWidth <= crumb.clientWidth || drop === chain.length - 1) break;
+    }
+  };
+
+  /** The card under the graph: name, status, mastery count, measures, summary, prereqs, "开始读 →". */
+  View.prototype.showCard = function (id) {
+    var node = id && this.graph.nodes[id];
+    this.cardId = node && node.kind !== "project" ? id : null;
+    if (!this.cardId) {
+      this.card.classList.remove("show");
+      this.card.innerHTML = '<span class="kg-card-hint">点一个点，这里显示它的说明和「开始读 →」</span>';
+      return;
+    }
+    var html = '<button class="kg-card-x" type="button" aria-label="关闭">×</button>'
+      + '<div class="kg-card-head">' + iconSvg(node, 14) + "<b>" + esc(node.name) + "</b>"
+      + '<span class="chip ' + (STATUS_CHIP[node.status] || "idle") + '">' + esc(node.status) + "</span>"
+      + (node.edit ? statusSlot(node) : "") + "</div>";
+    if (node.children.length && node.units)  // a rollup: groups, blocks, notes with points
+      html += '<div class="kg-card-line">已掌握 ' + node.mastered + " / " + node.units + "</div>";
+    if (node.measures && node.measures.length)
+      html += '<div class="kg-card-line">📊 衡量：' + esc(node.measures.join("、")) + "</div>";
+    if (node.summary) html += '<p class="kg-card-sum">' + esc(plain(node.summary)) + "</p>";
+    var prereqs = (node.prereqs || []).map(function (target) {
+      var found = nodeOf(target);
+      return found ? '<a href="#" data-focus="' + esc(target) + '">' + esc(shortName(found.node.name)) + "</a>" : "";
+    }).filter(Boolean);
+    if (prereqs.length) html += '<div class="kg-card-line">要先懂：' + prereqs.join("、") + "</div>";
+    if (node.doc)
+      html += '<a class="kg-read" href="#doc-' + esc(node.doc) + '" data-node="' + esc(id) + '" data-anchor="'
+        + esc(node.anchor || "") + '">开始读 →</a>';
+    this.card.innerHTML = html;
+    this.card.classList.add("show");
+  };
+
+  /** Status buttons of a node's line. On a block or group they set its own note's status ("本篇"), not the
+   *  rollup shown by its dot and chip. */
+  function statusSlot(node) {
+    return (node.children.length ? '<span class="kg-card-own">本篇：</span>' : "")
+      + '<span class="status-buttons" data-node="' + esc(node.id) + '"></span>';
+  }
+
+  View.prototype.cardClick = function (e) {
+    if (e.target.closest(".kg-card-x")) {
+      this.showCard(null);
+      return;
+    }
+    var jump = e.target.closest("[data-focus]");
+    if (jump) {
+      e.preventDefault();
+      focus(jump.dataset.focus);
+      return;
+    }
+    var read = e.target.closest(".kg-read");
+    if (read) {  // the hash link navigates; remember where to scroll and where to come back to
+      storage("kg-anchor", read.dataset.anchor || null);
+      storage("kg-node", read.dataset.node);  // the reading page draws its crumb for this node
+      storage("kg-focus", read.dataset.node);
+    }
+  };
+
+  View.prototype.buildTree = function () {
+    var self = this, nodes = this.graph.nodes;
+    function item(id) {
+      var node = nodes[id], kids = node.children;
+      var measures = node.measures && node.measures.length
+        ? ' <span class="kg-measure">📊 ' + esc(node.measures.join(", ")) + "</span>" : "";
+      return '<li class="' + (kids.length ? "kg-has closed" : "") + '"><div class="kg-row" data-id="' + esc(id) + '">'
+        + '<span class="kg-tw"></span>' + iconSvg(node) + '<span class="kg-name">' + esc(node.name) + measures
+        + "</span></div>" + (kids.length ? "<ul>" + kids.map(item).join("") + "</ul>" : "") + "</li>";
+    }
+    this.tree.innerHTML = "<ul>" + item(this.graph.root) + "</ul>";
+    this.tree.querySelectorAll(".kg-row").forEach(function (row) { self.rows[row.dataset.id] = row; });
+    this.tree.addEventListener("click", function (e) {
+      var row = e.target.closest(".kg-row");
+      if (!row) return;
+      var li = row.parentNode;
+      if (e.target.closest(".kg-tw") && li.classList.contains("kg-has")) {
+        li.classList.toggle("closed");
+        return;
+      }
+      self.focus(row.dataset.id);
+    });
+  };
+
+  /** Open the tree down to the selected item, highlight it and its ancestors, scroll it into view. */
+  View.prototype.markTree = function () {
+    var nodes = this.graph.nodes, selected = this.leaf || this.center, rows = this.rows;
+    this.tree.querySelectorAll(".kg-row.on,.kg-row.anc").forEach(function (row) { row.classList.remove("on", "anc"); });
+    for (var id = nodes[selected].parent; id; id = nodes[id].parent) {
+      rows[id].classList.add("anc");
+      rows[id].parentNode.classList.remove("closed");
+    }
+    rows[this.center].parentNode.classList.remove("closed");
+    var row = rows[selected], box = this.tree.getBoundingClientRect(), at = row.getBoundingClientRect();
+    row.classList.add("on");
+    if (at.top < box.top || at.bottom > box.bottom)
+      this.tree.scrollTop += at.top - box.top - this.tree.clientHeight / 3;
+  };
+
+  // ---- page wiring ----
+
+  function graphData() {
+    if (!data) {
+      var el = document.getElementById("kg-data");
+      data = el ? JSON.parse(el.textContent) : { graphs: {} };
+      if (typeof Status !== "undefined") Status.overlayData(data);  // status changed on this page since it was built
+    }
+    return data;
+  }
+
+  /** {graph, node, view} of a node id in any graph (projects or 概念), or null. */
+  function nodeOf(id) {
+    var graphs = graphData().graphs;
+    for (var name in graphs) {
+      if (graphs[name].nodes && graphs[name].nodes[id]) {
+        return { graph: graphs[name], node: graphs[name].nodes[id], view: viewOf(name) };
+      }
+    }
+    return null;
+  }
+
+  function viewOf(name) {
+    for (var i = 0; i < views.length; i++) if (views[i].name === name) return views[i];
+    return null;
+  }
+
+  /** Show node id in its project's graph (switching the project pane). False if no graph has it. */
+  function focus(id) {
+    var found = nodeOf(id);
+    if (!found || !found.view) return false;
+    var pane = found.view.el.closest(".proj-pane");
+    if (pane && !pane.classList.contains("show") && typeof pickProject === "function") pickProject(found.view.name);
+    found.view.focus(id);
+    return true;
+  }
+
+  function refresh(id) {
+    views.forEach(function (v) { v.refresh(id); });
+  }
+
+  function restoreFocus() {
+    var id = storage("kg-focus");
+    if (id) focus(id);
+  }
+
+  function activeView() {
+    for (var i = 0; i < views.length; i++) if (views[i].ready && views[i].visible()) return views[i];
+    return null;
+  }
+
+  function mount() {
+    var graphs = graphData().graphs;
+    document.querySelectorAll(".kg[data-graph]").forEach(function (el, i) {
+      var graph = graphs[el.dataset.graph];
+      if (graph && graph.nodes && graph.nodes[graph.root]) views.push(new View(el, graph, i));
+    });
+    if (typeof ResizeObserver !== "undefined") {
+      var watcher = new ResizeObserver(function (entries) {
+        entries.forEach(function (entry) {
+          views.forEach(function (v) { if (v.svg === entry.target) v.resized(); });
+        });
+      });
+      views.forEach(function (v) { watcher.observe(v.svg); });
+    }
+    document.addEventListener("click", function (e) {
+      var card = e.target.closest("[data-block]");
+      if (!card) return;
+      e.preventDefault();
+      if (focus(card.dataset.block)) {
+        var kg = nodeOf(card.dataset.block).view.el;
+        kg.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape" || (e.target.closest && e.target.closest("input,textarea,select"))) return;
+      var overlay = document.getElementById("overlay"), peek = document.getElementById("peek");
+      if ((overlay && overlay.classList.contains("show")) || (peek && !peek.hidden)) return;  // Esc closes those
+      var view = activeView();
+      if (view) view.up();
+    });
+    document.querySelectorAll(".proj-tab").forEach(function (tab) {  // runs after the page's pickProject
+      tab.addEventListener("click", function () {
+        var view = viewOf(tab.dataset.project);
+        if (view && view.ensureReady()) storage("kg-focus", view.leaf || view.center);
+      });
+    });
+    window.addEventListener("hashchange", function (e) {  // back from a reading page: same place again
+      var from = "", to = "";
+      try {
+        from = decodeURIComponent((e.oldURL || "").split("#")[1] || "");
+        to = decodeURIComponent(location.hash.slice(1)) || "项目";
+      } catch (err) {
+        return;  // a malformed hash typed by hand: nothing to restore
+      }
+      if (to === "项目" && from.indexOf("doc-") === 0) restoreFocus();
+    });
+    restoreFocus();
+    views.forEach(function (v) { v.ensureReady(); });
+  }
+
+  if (typeof document !== "undefined" && document.getElementById("kg-data")) mount();
+
+  return {
+    RADIUS: RADIUS, PAD: PAD, REST_SPEED: REST_SPEED, LAYOUT_MIN: LAYOUT_MIN, HUES: HUES, visibleWindow: visibleWindow, targets: targets, step: step, preLinks: preLinks,
+    neighborhood: neighborhood, hueOf: hueOf, shortName: shortName, plain: plain, iconSvg: iconSvg, isLeaf: isLeaf,
+    shapeMarkup: shapeMarkup, esc: esc, storage: storage, STATUS_CHIP: STATUS_CHIP,
+    nodeOf: nodeOf, focus: focus, data: graphData, mount: mount, views: views, refresh: refresh,
+  };
+})();
+if (typeof module !== "undefined") module.exports = KG;
+// Reading page: crumb, status chip, mini graph, point list, toc that follows the scroll, hover cards,
+// the peek panel, and coming back to the same scroll position. Pure helpers are exported for tests.
+var Reader = (function () {
+  "use strict";
+
+  var K = typeof KG !== "undefined" ? KG : require("./graph.js");
+  var SHAPES = { "已掌握": "full", "学习中": "half", "空白": "dashed" };  // anything else is an empty circle
+  var KIND_LABEL = { point: "知识点", concept: "概念", term: "术语", note: "笔记", topic: "主题", doc: "附页" };
+  var HOVER_DELAY = 300;
+  var SCROLL_KEY = "kg-scroll";
+  var TOC_LINE = 0.3;  // the current section is the last one whose heading is above 30% of the window
+  var FLASH_MS = 2000;  // how long the place naming a point stays lit
+  var SECTION_BLOCK = "p,li,tr,h3,h4,h5,h6";
+  var NESTED_BLOCK = "p,ul,ol,li,table,blockquote,pre";
+  // mini graph: at most `max` dots per side column, `row` apart; the parent sits on top
+  var MINI = { width: 240, max: 4, row: 46, top: 18, firstRow: 62, side: 42, r: 7, selfR: 10 };
+  var MINI_LABEL = { self: 6, prereq: 5, next: 5, parent: 12 };  // characters before "…"
+
+  // ---- pure helpers ----
+
+  /** {graph, node} of a node id in any graph of the page data, or null. */
+  function findNode(data, id) {
+    var graphs = data.graphs || {};
+    for (var name in graphs) {
+      var nodes = graphs[name].nodes;
+      if (nodes && Object.prototype.hasOwnProperty.call(nodes, id)) return { graph: graphs[name], node: nodes[id] };
+    }
+    return null;
+  }
+
+  /** Levels from the graph root down to nodeId: [{id, name (short), doc}]; [] if the id is unknown. */
+  function crumbPath(graph, nodeId) {
+    var nodes = graph.nodes, chain = [];
+    for (var id = nodeId; id && Object.prototype.hasOwnProperty.call(nodes, id); id = nodes[id].parent)
+      chain.unshift({ id: id, name: K.shortName(nodes[id].name), doc: nodes[id].doc || null });
+    return chain;
+  }
+
+  /** Which of the nodes showing a doc (ids, from data-nodes) the page is drawn for: the one the reader came
+   *  from (a point stands for the node it hangs under), else the first one showing the whole doc, else the
+   *  first one; null when none is known. */
+  function chooseNode(data, ids, wanted) {
+    var known = (ids || []).filter(function (id) { return !!findNode(data, id); });
+    var found = wanted ? findNode(data, wanted) : null;
+    if (found && found.node.kind === "point") wanted = found.node.parent;
+    if (wanted && known.indexOf(wanted) >= 0) return wanted;
+    var whole = known.filter(function (id) { return !findNode(data, id).node.anchor; });
+    return whole[0] || known[0] || null;
+  }
+
+  /** The other places a doc hangs in the graphs: [{id, names}], names from the root down. */
+  function alsoMounts(data, ids, currentId) {
+    return (ids || []).filter(function (id) { return id !== currentId; }).map(function (id) {
+      var found = findNode(data, id);
+      return found ? { id: id, names: crumbPath(found.graph, id).map(function (level) { return level.name; }) } : null;
+    }).filter(Boolean);
+  }
+
+  /** The words that name a point on the page: its name and aliases. */
+  function pointLabels(node) {
+    return [node.name].concat(node.aliases || []).filter(function (word) { return String(word).trim(); });
+  }
+
+  function squash(text) {
+    return String(text).replace(/\s+/g, "").toLowerCase();
+  }
+
+  /** Index of the first text naming any of labels (case and spaces ignored), or -1. */
+  function firstMention(texts, labels) {
+    var words = labels.map(squash).filter(Boolean);
+    for (var i = 0; i < texts.length; i++) {
+      var text = squash(texts[i]);
+      if (words.some(function (word) { return text.indexOf(word) >= 0; })) return i;
+    }
+    return -1;
+  }
+
+  function rememberScroll(store, hash, y) {
+    store[hash] = Math.max(0, Math.round(y));
+  }
+
+  /** Last remembered scroll position of a page, or null if there is none. */
+  function recallScroll(store, hash) {
+    var y = Object.prototype.hasOwnProperty.call(store, hash) ? store[hash] : null;
+    return typeof y === "number" && isFinite(y) ? y : null;
+  }
+
+  function shapeOf(status) {
+    return SHAPES[status] || "empty";
+  }
+
+  function pointNodes(nodes, node) {
+    return (node.children || []).map(function (id) { return nodes[id]; })
+      .filter(function (child) { return child && child.kind === "point"; });
+  }
+
+  /** [{id, name}] of the ids that resolve to a node; unknown ids are dropped. */
+  function refList(data, ids) {
+    return (ids || []).map(function (id) {
+      var found = findNode(data, id);
+      return found ? { id: id, name: K.shortName(found.node.name) } : null;
+    }).filter(Boolean);
+  }
+
+  /** The title a doc is listed under in the search entries (notes and concept cards), or "". */
+  function docTitle(data, doc) {
+    var href = "#doc-" + doc, entries = data.search || [];
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].href === href && (entries[i].k === "note" || entries[i].k === "concept")) return entries[i].t;
+    }
+    return "";
+  }
+
+  function bareModel(kind, title) {
+    return { kind: kind, node: null, block: -1, title: title, status: "", shape: null, summary: "", source: "",
+             prereqs: [], confusions: [], points: [], open: null, anchor: "", go: "" };
+  }
+
+  /** Peek of a graph node. Its summary is plain text in the data and comes back escaped. */
+  function nodeModel(data, id) {
+    var found = findNode(data, id), node = found.node, isPoint = node.kind === "point";
+    var kind = isPoint ? "point" : node.kind === "concept" ? "concept" : node.doc ? "note" : "topic";
+    var status = isPoint ? node.status : node.doc_status || node.status || "";
+    var model = bareModel(kind, kind === "note" ? docTitle(data, node.doc) || node.name : node.name);
+    model.node = id;
+    model.block = node.block;
+    model.status = status;
+    model.shape = shapeOf(status);
+    model.summary = node.summary ? K.esc(K.plain(node.summary)) : "";
+    model.prereqs = refList(data, node.prereqs);
+    model.confusions = refList(data, node.confusions);
+    model.points = isPoint ? [] : pointNodes(found.graph.nodes, node).map(function (p) {
+      return { id: p.id, name: p.name, status: p.status, shape: p.shape, block: p.block, anchor: p.anchor || "" };
+    });
+    model.open = node.doc ? "#doc-" + node.doc : null;
+    model.anchor = node.anchor || "";  // a point's section, or the section a skeleton node shows
+    model.go = id;
+    return model;
+  }
+
+  /** What the peek panel shows. target: {term: id} | {doc: id, title?} | {node: id}; null if unknown.
+   *  summary and source are HTML: escaped text for points and concepts, rendered HTML for glossary terms. */
+  function peekModel(data, target) {
+    if (target.term) {
+      var term = (data.terms || {})[target.term];
+      if (!term) return null;
+      if (term.node && findNode(data, term.node)) return nodeModel(data, term.node);
+      // only glossary terms carry rendered HTML; the rest is plain text, by kind not by node lookup
+      var html = term.kind === "term", model = bareModel(KIND_LABEL[term.kind] ? term.kind : "term", term.name);
+      model.summary = html ? term.summary || "" : K.esc(K.plain(term.summary || ""));
+      model.source = html ? term.source || "" : K.esc(term.source || "");
+      return model;
+    }
+    if (target.doc) {
+      var ids = (data.docNodes || {})[target.doc] || [];
+      var doc = ids.length && findNode(data, ids[0]) ? nodeModel(data, ids[0]) : bareModel("doc", "");
+      doc.title = docTitle(data, target.doc) || target.title || doc.title;
+      doc.open = "#doc-" + target.doc;
+      doc.anchor = "";
+      doc.go = "";  // a link to the doc, not to one of its nodes: the reading page picks the node
+      return doc;
+    }
+    if (target.node) return findNode(data, target.node) ? nodeModel(data, target.node) : null;
+    return null;
+  }
+
+  /** Positions for the mini graph: parent on top, prereqs in the left column, what comes next in the
+   *  right one, this page in the middle. Long columns are cut at MINI.max (more = how many were cut). */
+  function miniLayout(hood, width) {
+    var left = hood.prereqs.slice(0, MINI.max), right = hood.next.slice(0, MINI.max);
+    var rows = Math.max(left.length, right.length, 1), first = hood.parent ? MINI.firstRow : MINI.top + MINI.selfR;
+    var cx = width / 2, dots = [];
+    function column(ids, role, x) {
+      var offset = (rows - ids.length) * MINI.row / 2;
+      ids.forEach(function (id, i) { dots.push({ id: id, role: role, x: x, y: first + offset + i * MINI.row }); });
+    }
+    if (hood.parent) dots.push({ id: hood.parent, role: "parent", x: cx, y: MINI.top });
+    dots.push({ id: hood.self, role: "self", x: cx, y: first + (rows - 1) * MINI.row / 2 });
+    column(left, "prereq", MINI.side);
+    column(right, "next", width - MINI.side);
+    return { width: width, height: first + (rows - 1) * MINI.row + 30, dots: dots,
+             more: { prereq: hood.prereqs.length - left.length, next: hood.next.length - right.length } };
+  }
+
+  function chip(status) {
+    if (!status) return "";
+    return '<span class="chip ' + (K.STATUS_CHIP[status] || "idle") + '">' + K.esc(status) + "</span>";
+  }
+
+  /** Where Task 10's status buttons mount for one node. */
+  function slot(nodeId) {
+    return '<span class="status-buttons" data-node="' + K.esc(nodeId) + '"></span>';
+  }
+
+  function peekRefs(items) {
+    return items.map(function (item) {
+      return '<a href="#" data-peek-node="' + K.esc(item.id) + '">' + K.esc(item.name) + "</a>";
+    }).join("、");
+  }
+
+  function peekLine(label, html) {
+    return '<div class="peek-line"><span class="peek-label">' + label + "</span>" + html + "</div>";
+  }
+
+  /** Markup of the peek panel for a model from peekModel. */
+  function peekHtml(m) {
+    var icon = m.shape ? K.iconSvg({ block: m.block, shape: m.shape }, 14) : "";
+    var html = '<button class="peek-x" type="button" aria-label="关闭">✕</button>'
+      + '<div class="peek-kind">' + KIND_LABEL[m.kind] + "</div>"
+      + '<h3 class="peek-title">' + icon + "<span>" + K.esc(m.title) + "</span></h3>";
+    if (m.status) html += '<div class="peek-status">' + chip(m.status) + (m.kind === "point" ? slot(m.node) : "") + "</div>";
+    if (m.summary) html += '<p class="peek-sum">' + m.summary + "</p>";
+    if (m.source) html += peekLine("出处", m.source);
+    if (m.prereqs.length) html += peekLine("要先懂", peekRefs(m.prereqs));
+    if (m.confusions.length) html += peekLine("容易混淆", peekRefs(m.confusions));
+    if (m.points.length) {
+      html += '<div class="peek-label peek-points-title">本篇知识点</div><ul class="peek-points">'
+        + m.points.map(function (p) {
+          return "<li>" + K.iconSvg(p, 12) + '<a href="#" data-peek-node="' + K.esc(p.id) + '">' + K.esc(p.name) + "</a></li>";
+        }).join("") + "</ul>";
+    }
+    if (m.open)
+      html += '<a class="peek-open" href="' + K.esc(m.open) + '" data-anchor="' + K.esc(m.anchor) + '" data-node="'
+        + K.esc(m.go || "") + '">打开全文 →</a>';
+    return html;
+  }
+
+  // ---- the page ----
+
+  var data = null, store = {}, current = "", peek = null, peekTarget = null, tip = null, tipFor = null, tipTimer = 0;
+  var toc = null;
+
+  function loadStore() {
+    try {
+      var saved = JSON.parse(K.storage(SCROLL_KEY) || "{}");
+      return saved && typeof saved === "object" ? saved : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveStore() {
+    K.storage(SCROLL_KEY, JSON.stringify(store));
+  }
+
+  function mountIds(article) {
+    return (article.dataset.nodes || "").split(",").filter(Boolean);
+  }
+
+  /** The node this reading page is drawn for (set on arrival by show()). */
+  function nodeOf(article) {
+    var id = article && article.dataset.node;
+    return id ? findNode(data, id) : null;
+  }
+
+  /** Called by the page's show() after it switched pages: draw the reading page for the node the reader
+   *  came from, then scroll to the section "开始读" asked for (lighting up where a point is named), else to
+   *  where this page was left, else to the top. Positions are recorded while scrolling (onScroll), so
+   *  leaving a page needs no extra step. */
+  function arrive() {
+    if (!data) { window.scrollTo(0, 0); return; }
+    closePeek();
+    hideTip();
+    saveStore();
+    var article = document.querySelector("article.doc.show");
+    current = article ? article.id : "";
+    watchToc(article);
+    var wanted = K.storage("kg-node"), anchor = K.storage("kg-anchor");
+    K.storage("kg-node", null);
+    K.storage("kg-anchor", null);
+    if (!article) { window.scrollTo(0, 0); return; }
+    setup(article);
+    show(article, wanted);
+    var found = nodeOf(article);
+    if (!anchor && wanted && found && found.node.id === wanted) anchor = found.node.anchor;
+    var target = anchor && document.getElementById(anchor);
+    if (target && article.contains(target)) {
+      goSection(target, wanted, false);
+    } else {
+      var y = recallScroll(store, current) || 0, id = current;
+      window.scrollTo(0, y);
+      requestAnimationFrame(function () {  // late layout (images) may have clamped the first try
+        if (current === id && Math.abs(window.scrollY - y) > 1) window.scrollTo(0, y);
+      });
+    }
+    markToc();
+  }
+
+  /** What every reading page gets once: the button that opens the side column on narrow screens. */
+  function setup(article) {
+    if (article.dataset.ready) return;
+    article.dataset.ready = "1";
+    var toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "side-toggle";
+    toggle.textContent = "本页";
+    article.querySelector(".doc-top").appendChild(toggle);
+  }
+
+  /** Draw crumb, "也挂在", status, mini graph and point list for the node chosen from wanted. */
+  function show(article, wanted) {
+    var id = chooseNode(data, mountIds(article), wanted);
+    if (id) article.dataset.node = id; else delete article.dataset.node;
+    var found = nodeOf(article);
+    if (!found) return;
+    renderCrumb(article, found);
+    renderStatus(article, found);
+    renderMini(article, found);
+    renderPoints(article, found);
+  }
+
+  function crumbLinks(path, boldLast) {
+    return path.map(function (level, i) {
+      var name = K.esc(level.name);
+      return '<a href="#项目" data-focus-id="' + K.esc(level.id) + '" title="在图谱里看">'
+        + (boldLast && i === path.length - 1 ? "<b>" + name + "</b>" : name) + "</a>";
+    }).join('<span class="sep">›</span>');
+  }
+
+  function renderCrumb(article, found) {
+    article.querySelector(".crumb").innerHTML = crumbLinks(crumbPath(found.graph, found.node.id), true);
+    var also = article.querySelector(".crumb-also");
+    if (!also) return;
+    var others = alsoMounts(data, mountIds(article), found.node.id);
+    also.innerHTML = others.length ? "也挂在：" + others.map(function (other) {
+      var path = crumbPath(findNode(data, other.id).graph, other.id);
+      return '<span class="also-path">' + crumbLinks(path, false) + "</span>";
+    }).join("；") : "";
+  }
+
+  function renderStatus(article, found) {
+    var node = found.node, status = node.doc_status || node.status || "";
+    var points = pointNodes(found.graph.nodes, node);
+    var mastered = points.filter(function (p) { return p.status === "已掌握"; }).length;
+    article.querySelector(".doc-status").innerHTML = chip(status)
+      + (points.length ? '<span class="doc-mastery">已掌握 ' + mastered + " / " + points.length + " 个知识点</span>" : "")
+      + slot(node.id);
+  }
+
+  function renderPoints(article, found) {
+    var points = pointNodes(found.graph.nodes, found.node);
+    if (!points.length) return;
+    article.querySelector(".side-points").innerHTML = '<div class="side-title">本篇知识点</div>'
+      + points.map(function (p) {
+        return '<div class="side-point">' + K.iconSvg(p, 12) + '<a href="#" class="side-point-name" data-point="'
+          + K.esc(p.id) + '" data-anchor="' + K.esc(p.anchor || "") + '">' + K.esc(p.name) + "</a>" + slot(p.id) + "</div>";
+      }).join("");
+  }
+
+  function clip(text, max) {
+    return text.length > max ? text.slice(0, max) + "…" : text;
+  }
+
+  function miniLine(a, b, cls, marker) {
+    var ra = a.role === "self" ? MINI.selfR : MINI.r, rb = (b.role === "self" ? MINI.selfR : MINI.r) + 3;
+    var dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1;
+    return '<line class="' + cls + '" x1="' + (a.x + dx / len * ra).toFixed(1) + '" y1="' + (a.y + dy / len * ra).toFixed(1)
+      + '" x2="' + (b.x - dx / len * rb).toFixed(1) + '" y2="' + (b.y - dy / len * rb).toFixed(1) + '"'
+      + (marker ? ' marker-end="url(#' + marker + ')"' : "") + "/>";
+  }
+
+  function miniDot(d) {
+    var node = findNode(data, d.id).node, r = d.role === "self" ? MINI.selfR : MINI.r;
+    var name = K.esc(clip(K.shortName(node.name), MINI_LABEL[d.role]));
+    var label = d.role === "parent"
+      ? '<text class="mini-lbl" x="' + (r + 5) + '" dy="4" text-anchor="start">↩ ' + name + "</text>"
+      : '<text class="mini-lbl" dy="' + (r + 13) + '">' + name + "</text>";
+    return '<g class="mini-dot mini-' + d.role + '"' + (d.role === "self" ? "" : ' data-id="' + K.esc(d.id) + '"')
+      + ' transform="translate(' + d.x + "," + d.y + ')" style="--h:' + K.hueOf(node) + '"><title>' + K.esc(node.name)
+      + "</title>" + K.shapeMarkup(node.shape, r, d.role === "self" ? 2.4 : 1.8) + label + "</g>";
+  }
+
+  /** This page, what to understand first, what to read next and the level above, drawn small. */
+  function renderMini(article, found) {
+    var hood = K.neighborhood(found.graph, found.node.id);
+    function known(id) { return !!findNode(data, id); }
+    hood.prereqs = hood.prereqs.filter(known);
+    hood.next = hood.next.filter(known);
+    if (hood.parent && !known(hood.parent)) hood.parent = null;
+    if (!hood.parent && !hood.prereqs.length && !hood.next.length) return;
+    var lay = miniLayout(hood, MINI.width), marker = "mini-ar-" + article.id, self = lay.dots[hood.parent ? 1 : 0];
+    var lines = lay.dots.map(function (d) {
+      if (d.role === "parent") return miniLine(d, self, "mini-up", "");
+      if (d.role === "prereq") return miniLine(d, self, "mini-pre", marker);
+      return d.role === "next" ? miniLine(self, d, "mini-pre", marker) : "";
+    }).join("");
+    var more = [];
+    if (lay.more.prereq) more.push("要先懂还有 " + lay.more.prereq + " 个");
+    if (lay.more.next) more.push("接着读还有 " + lay.more.next + " 个");
+    article.querySelector(".mini").innerHTML = '<div class="side-title">在图谱里</div>'
+      + '<svg class="mini-svg" viewBox="0 0 ' + lay.width + " " + lay.height + '" width="' + lay.width + '" height="'
+      + lay.height + '"><defs><marker id="' + marker + '" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="6" '
+      + 'markerHeight="6" orient="auto"><path d="M0,0L8,4L0,8" class="kg-arrow"/></marker></defs>'
+      + lines + lay.dots.map(miniDot).join("") + "</svg>"
+      + '<div class="mini-legend">左：要先懂　右：读完接着读' + (more.length ? "（" + more.join("，") + "）" : "") + "</div>";
+  }
+
+  /** Go where a mini graph dot points: its doc (at its section, if it has one), else the graph centred on it. */
+  function goNode(id) {
+    var found = findNode(data, id);
+    if (!found) return;
+    var node = found.node;
+    if (node.doc) {
+      openDoc("#doc-" + node.doc, node.anchor || "", id);
+    } else {
+      K.storage("kg-focus", id);
+      location.hash = "#项目";
+    }
+  }
+
+  /** Navigate to a doc, drawn for nodeId, and scroll to anchor on arrival; on the doc already shown, redraw
+   *  for nodeId if it is one of the doc's nodes, then just scroll. */
+  function openDoc(href, anchor, nodeId) {
+    if (href === "#" + current) {
+      var article = document.getElementById(current);
+      if (nodeId && article) show(article, nodeId);
+      var target = anchor && document.getElementById(anchor);
+      if (target) goSection(target, nodeId, true);
+      return;
+    }
+    K.storage("kg-anchor", anchor || null);
+    K.storage("kg-node", nodeId || null);
+    location.hash = href;
+  }
+
+  function scrollToId(id, smooth) {
+    var el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+  }
+
+  /** Scroll a section heading to the top; when pointId is a point, light up the first paragraph, list item
+   *  or table row of the section that names it (kept in view), else the heading if only it names it. */
+  function goSection(heading, pointId, smooth) {
+    heading.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+    var found = pointId ? findNode(data, pointId) : null;
+    if (!found || found.node.kind !== "point") return;
+    var blocks = sectionBlocks(heading), labels = pointLabels(found.node);
+    var at = firstMention(blocks.map(ownText), labels);
+    var el = at >= 0 ? blocks[at] : firstMention([heading.textContent], labels) === 0 ? heading : null;
+    if (!el) return;
+    if (el !== heading && el.getBoundingClientRect().bottom > window.innerHeight)
+      el.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
+    el.classList.remove("point-flash");
+    void el.offsetWidth;
+    el.classList.add("point-flash");
+    setTimeout(function () { el.classList.remove("point-flash"); }, FLASH_MS);
+  }
+
+  /** Paragraphs, list items, table rows and lower headings between a heading and the next heading of the
+   *  same or a higher level, in page order. */
+  function sectionBlocks(heading) {
+    var level = Number(heading.tagName.slice(1)), blocks = [];
+    for (var el = heading.nextElementSibling; el; el = el.nextElementSibling) {
+      var tag = /^H([1-6])$/.exec(el.tagName);
+      if (tag && Number(tag[1]) <= level) break;
+      if (el.matches(SECTION_BLOCK)) blocks.push(el);
+      blocks.push.apply(blocks, [].slice.call(el.querySelectorAll(SECTION_BLOCK)));
+    }
+    return blocks;
+  }
+
+  /** Text of a block without the blocks nested inside it (a list item's sub-list is its own block). */
+  function ownText(el) {
+    return [].filter.call(el.childNodes, function (node) {
+      return node.nodeType === 3 || !(node.matches && node.matches(NESTED_BLOCK));
+    }).map(function (node) { return node.textContent; }).join("");
+  }
+
+  /** Redraw what shows statuses (top chip, point list, mini graph, open peek) after a status changed. */
+  function refresh() {
+    document.querySelectorAll("article.doc[data-ready]").forEach(function (article) {
+      var found = nodeOf(article);
+      if (!found) return;
+      renderStatus(article, found);
+      renderPoints(article, found);
+      renderMini(article, found);
+    });
+    if (peek && !peek.hidden && peekTarget) {
+      var top = peek.scrollTop;
+      openPeek(peekTarget);
+      peek.scrollTop = top;
+    }
+  }
+
+  // ---- toc that follows the scroll ----
+
+  /** The shown article's toc links and the headings they point to (null when no reading page is shown). */
+  function watchToc(article) {
+    toc = null;
+    if (!article) return;
+    var links = [].slice.call(article.querySelectorAll(".side-toc a[data-toc]"));
+    var heads = links.map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); });
+    toc = { links: links, heads: heads, frame: 0 };
+  }
+
+  /** Highlight the last heading above TOC_LINE; at the very bottom of the page, the last one. */
+  function markToc() {
+    if (!toc || !toc.links.length) return;
+    var line = window.innerHeight * TOC_LINE, on = 0, root = document.documentElement;
+    toc.heads.forEach(function (h, i) { if (h && h.getBoundingClientRect().top < line) on = i; });
+    if (window.scrollY + window.innerHeight >= root.scrollHeight - 2) on = toc.links.length - 1;
+    toc.links.forEach(function (a, i) { a.classList.toggle("on", i === on); });
+  }
+
+  function markTocSoon() {
+    if (!toc || toc.frame) return;
+    var shown = toc;
+    shown.frame = requestAnimationFrame(function () {
+      shown.frame = 0;
+      if (toc === shown) markToc();
+    });
+  }
+
+  // ---- peek panel and hover card ----
+
+  function openPeek(target) {
+    var model = peekModel(data, target);
+    if (!model || !peek) return;
+    peekTarget = target;
+    peek.innerHTML = peekHtml(model);
+    peek.hidden = false;
+    peek.scrollTop = 0;
+  }
+
+  function closePeek() {
+    if (peek) peek.hidden = true;
+  }
+
+  function showTip(term) {
+    var model = peekModel(data, { term: term.dataset.term });
+    if (!model) return;
+    if (!tip) {
+      tip = document.createElement("div");
+      tip.className = "term-tip";
+      document.body.appendChild(tip);
+    }
+    tip.innerHTML = '<div class="tip-head"><b>' + K.esc(model.title) + "</b>" + (model.status ? chip(model.status) : "") + "</div>"
+      + (model.summary ? '<div class="tip-sum">' + model.summary + "</div>" : '<div class="tip-sum muted">还没写一句话说明</div>')
+      + (model.source ? '<div class="tip-src">出处：' + model.source + "</div>" : "")
+      + '<div class="tip-hint">点一下在右侧打开</div>';
+    tip.hidden = false;
+    var box = term.getBoundingClientRect(), width = tip.offsetWidth, height = tip.offsetHeight;
+    var left = Math.max(8, Math.min(box.left, window.innerWidth - width - 8));
+    var top = box.bottom + 6 + height > window.innerHeight ? box.top - height - 6 : box.bottom + 6;
+    tip.style.left = left + "px";
+    tip.style.top = Math.max(8, top) + "px";
+  }
+
+  function hideTip() {
+    clearTimeout(tipTimer);
+    tipFor = null;
+    if (tip) tip.hidden = true;
+  }
+
+  function onOver(e) {
+    var term = e.target.closest && e.target.closest(".doc-body .term[data-term]");
+    if (!term || term === tipFor) return;
+    hideTip();
+    tipFor = term;
+    tipTimer = setTimeout(function () { showTip(term); }, HOVER_DELAY);
+  }
+
+  function onOut(e) {
+    var term = e.target.closest && e.target.closest(".term[data-term]");
+    if (term && !term.contains(e.relatedTarget)) hideTip();
+  }
+
+  // ---- clicks, keys, scroll ----
+
+  function onClick(e) {
+    var t = e.target, el;
+    if (!t.closest) return;
+    if (t.closest("#peek")) { peekClick(e, t); return; }
+    if ((el = t.closest(".back-graph"))) {  // #项目 (attachments: #成果); the graph then shows this page's node
+      var found = nodeOf(el.closest("article.doc"));
+      if (found) K.storage("kg-focus", found.node.id);
+      return;
+    }
+    if ((el = t.closest(".crumb a[data-focus-id], .crumb-also a[data-focus-id]"))) { K.storage("kg-focus", el.dataset.focusId); return; }
+    if ((el = t.closest(".side-toggle"))) { el.closest("article.doc").querySelector(".doc-side").classList.toggle("open"); return; }
+    if ((el = t.closest("[data-toc]"))) {  // no hash change: show() would take the heading id for a section
+      e.preventDefault();
+      closeSide(el);
+      scrollToId(el.getAttribute("href").slice(1), true);
+      return;
+    }
+    if ((el = t.closest(".side-point-name"))) {
+      e.preventDefault();
+      closeSide(el);
+      var heading = el.dataset.anchor && document.getElementById(el.dataset.anchor);
+      if (heading) goSection(heading, el.dataset.point, true);
+      else openPeek({ node: el.dataset.point });
+      return;
+    }
+    if ((el = t.closest(".mini-dot[data-id]"))) { goNode(el.dataset.id); return; }
+    if (!t.closest(".doc-body")) return;
+    if ((el = t.closest(".term[data-term]"))) {
+      e.preventDefault();
+      hideTip();
+      openPeek({ term: el.dataset.term });
+      return;
+    }
+    el = t.closest("a[href]");
+    var match = el && !modified(e) && /^#(doc-[^#]+)$/.exec(el.getAttribute("href"));
+    var article = match && document.getElementById(match[1]);
+    if (article && article.matches("article.doc")) {  // other docs open in the peek; sections and files as before
+      e.preventDefault();
+      var h1 = article.querySelector(".doc-body h1");
+      openPeek({ doc: match[1].slice(4), title: h1 ? h1.textContent : "" });
+    }
+  }
+
+  /** Ctrl/Cmd/Shift or a non-primary button: the browser's own link handling (new tab, window). */
+  function modified(e) {
+    return e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0;
+  }
+
+  function closeSide(el) {
+    var side = el.closest(".doc-side");
+    if (side) side.classList.remove("open");
+  }
+
+  function peekClick(e, t) {
+    var el;
+    if (t.closest(".peek-x")) { closePeek(); return; }
+    if ((el = t.closest("[data-peek-node]"))) { e.preventDefault(); openPeek({ node: el.dataset.peekNode }); return; }
+    if ((el = t.closest(".peek-open")) && !modified(e)) {
+      e.preventDefault();
+      closePeek();
+      openDoc(el.getAttribute("href"), el.dataset.anchor, el.dataset.node);
+    }
+  }
+
+  function onKey(e) {
+    if (e.key !== "Escape") return;
+    hideTip();
+    var overlay = document.getElementById("overlay");
+    if (overlay && overlay.classList.contains("show")) return;  // Esc belongs to the enlarged image
+    if (peek && !peek.hidden) { closePeek(); return; }
+    var side = document.querySelector("article.doc.show .doc-side.open");
+    if (side) side.classList.remove("open");
+  }
+
+  function onScroll() {
+    if (current) rememberScroll(store, current, window.scrollY);
+    if (tip && !tip.hidden) hideTip();
+    markTocSoon();
+  }
+
+  function mount() {
+    data = K.data();
+    store = loadStore();
+    peek = document.getElementById("peek");
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";  // restored per page in arrive()
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("pagehide", saveStore);
+    document.addEventListener("click", onClick);
+    document.addEventListener("mouseover", onOver);
+    document.addEventListener("mouseout", onOut);
+    document.addEventListener("keydown", onKey);
+    arrive();
+  }
+
+  if (typeof document !== "undefined" && document.getElementById("kg-data")) mount();
+
+  return {
+    crumbPath: crumbPath, chooseNode: chooseNode, alsoMounts: alsoMounts, pointLabels: pointLabels,
+    firstMention: firstMention, rememberScroll: rememberScroll, recallScroll: recallScroll, peekModel: peekModel,
+    peekHtml: peekHtml, miniLayout: miniLayout, findNode: findNode, arrive: arrive, openPeek: openPeek, refresh: refresh,
+  };
+})();
+if (typeof module !== "undefined") module.exports = Reader;
+// Search box: index entries (points, notes, concept cards, headings) from kg-data, body text from the
+// page's own articles (collected on the first search). Pure helpers are exported for tests.
+var Search = (function () {
+  "use strict";
+
+  var K = typeof KG !== "undefined" ? KG : require("./graph.js");
+  var KINDS = ["point", "note", "concept", "heading"];
+  var LABELS = { point: "知识点", note: "笔记", concept: "概念", heading: "标题", text: "正文" };
+  var DELAY = 150;
+  var FLASH_MS = 1800;
+  var SNIPPET_BEFORE = 24, SNIPPET_AFTER = 56;
+  var NESTED_BLOCK = "p,ul,ol,li,table,blockquote,pre";
+
+  // ---- matching (pure) ----
+
+  function norm(text) {
+    return String(text == null ? "" : text).toLowerCase();
+  }
+
+  /** 0 = a name equals the query, 1 = a name starts with it, 2 = a name contains it, -1 = no match. */
+  function rank(entry, needle) {
+    var best = -1;
+    (entry.w && entry.w.length ? entry.w : [entry.t]).forEach(function (word) {
+      var text = norm(word), at = text.indexOf(needle), got;
+      if (at < 0) return;
+      got = text === needle ? 0 : at === 0 ? 1 : 2;
+      if (best < 0 || got < best) best = got;
+    });
+    return best;
+  }
+
+  /** Entries matching query, grouped by kind; exact name > name starts with > name or alias contains. */
+  function searchIndex(entries, query, limit) {
+    var max = limit === undefined ? 8 : limit, needle = norm(query).trim();
+    var out = { point: [], note: [], concept: [], heading: [] };
+    if (!needle) return out;
+    var ranked = [];
+    (entries || []).forEach(function (entry, order) {
+      var r = out[entry.k] ? rank(entry, needle) : -1;
+      if (r >= 0) ranked.push({ entry: entry, rank: r, order: order });
+    });
+    ranked.sort(function (a, b) { return a.rank - b.rank || a.order - b.order; });
+    ranked.forEach(function (item) {
+      var group = out[item.entry.k];
+      if (group.length < max) group.push(item.entry);
+    });
+    return out;
+  }
+
+  /** A short piece of text around the first hit; "…" marks where it was cut. */
+  function snippetOf(text, needle) {
+    var at = norm(text).indexOf(needle);
+    if (at < 0) return text.slice(0, SNIPPET_BEFORE + SNIPPET_AFTER);
+    var from = Math.max(0, at - SNIPPET_BEFORE), to = Math.min(text.length, at + needle.length + SNIPPET_AFTER);
+    return (from > 0 ? "…" : "") + text.slice(from, to) + (to < text.length ? "…" : "");
+  }
+
+  /** Blocks of text containing query, in document order: [{docId, title, snippet, elementIndex}]. */
+  function searchText(docs, query, limit) {
+    var max = limit === undefined ? 10 : limit, needle = norm(query).trim(), hits = [];
+    if (!needle) return hits;
+    (docs || []).forEach(function (doc) {
+      doc.blocks.forEach(function (block, i) {
+        if (hits.length < max && norm(block).indexOf(needle) >= 0)
+          hits.push({ docId: doc.docId, title: doc.title, snippet: snippetOf(block, needle), elementIndex: i });
+      });
+    });
+    return hits;
+  }
+
+  // ---- results markup (pure) ----
+
+  /** text as HTML (escaped) with every match of query inside <mark>. */
+  function highlight(text, query) {
+    var needle = norm(query).trim(), source = String(text), lower = norm(source), html = "", from = 0, at;
+    if (!needle) return K.esc(source);
+    while ((at = lower.indexOf(needle, from)) >= 0) {
+      html += K.esc(source.slice(from, at)) + "<mark>" + K.esc(source.slice(at, at + needle.length)) + "</mark>";
+      from = at + needle.length;
+    }
+    return html + K.esc(source.slice(from));
+  }
+
+  /** The alias that matched, when the title itself does not contain the query ("" otherwise). */
+  function aliasHint(entry, query) {
+    var needle = norm(query).trim();
+    if (!needle || norm(entry.t).indexOf(needle) >= 0) return "";
+    var found = (entry.w || []).filter(function (word) { return norm(word).indexOf(needle) >= 0; });
+    return found[0] || "";
+  }
+
+  function entryItem(entry, query) {
+    var hint = aliasHint(entry, query);
+    var sub = hint ? "别名：" + hint : entry.k === "heading" ? entry.s : K.plain(entry.s || "").slice(0, 40);
+    return { kind: entry.k, title: entry.t, sub: sub, entry: entry };
+  }
+
+  /** [{label, items}] in the order 知识点 / 笔记 / 概念 / 标题 / 正文, empty groups left out. */
+  function buildGroups(entries, docs, query) {
+    var found = searchIndex(entries, query), groups = [];
+    KINDS.forEach(function (kind) {
+      if (found[kind].length)
+        groups.push({ label: LABELS[kind], items: found[kind].map(function (e) { return entryItem(e, query); }) });
+    });
+    var hits = searchText(docs, query);
+    if (hits.length)
+      groups.push({ label: LABELS.text, items: hits.map(function (h) {
+        return { kind: "text", title: h.snippet, sub: h.title, hit: h };
+      }) });
+    return groups;
+  }
+
+  function resultsHtml(groups, query) {
+    if (!groups.length) return '<div class="sr-empty">没有找到</div>';
+    var n = 0;
+    return groups.map(function (group) {
+      return '<div class="sr-group">' + K.esc(group.label) + "</div>" + group.items.map(function (item) {
+        return '<div class="sr-item" role="option" data-i="' + n++ + '"><span class="sr-t">'
+          + highlight(item.title, query) + "</span>"
+          + (item.sub ? '<span class="sr-s">' + K.esc(item.sub) + "</span>" : "") + "</div>";
+      }).join("");
+    }).join("");
+  }
+
+  // ---- body text from the page ----
+
+  /** Text of an element without the blocks nested inside it (a list item's sub-list is its own block). */
+  function ownText(el) {
+    return Array.prototype.filter.call(el.childNodes, function (node) {
+      return node.nodeType === 3 || !(node.matches && node.matches(NESTED_BLOCK));
+    }).map(function (node) { return node.textContent; }).join("");
+  }
+
+  /** Every reading page's paragraphs, list items and table cells: docs for searchText plus their elements. */
+  function collectDocs(root) {
+    var docs = [], elements = {};
+    root.querySelectorAll("article.doc").forEach(function (article) {
+      var blocks = [], els = [], title = article.querySelector("h1");
+      article.querySelectorAll(".doc-body p, .doc-body li, .doc-body td").forEach(function (el) {
+        var text = ownText(el).replace(/\s+/g, " ").trim();
+        if (text) { blocks.push(text); els.push(el); }
+      });
+      var docId = article.id.replace(/^doc-/, "");
+      docs.push({ docId: docId, title: title ? title.textContent.trim() : docId, blocks: blocks });
+      elements[docId] = els;
+    });
+    return { docs: docs, elements: elements };
+  }
+
+  // ---- going to a result ----
+
+  var corpus = null;
+
+  function pageText() {
+    if (!corpus) corpus = collectDocs(document);
+    return corpus;
+  }
+
+  /** Open a doc, drawn for graph node nodeId if given, and scroll to an element id in it (the reader does the
+   *  scrolling on arrival). */
+  function openDoc(href, anchor, nodeId) {
+    if (decodeURIComponent(location.hash) === href) {  // already there: no hashchange will come
+      var el = anchor && document.getElementById(anchor);
+      if (el) el.scrollIntoView({ block: "start" });
+      return;
+    }
+    K.storage("kg-anchor", anchor || null);
+    K.storage("kg-node", nodeId || null);
+    location.hash = href;
+  }
+
+  /** Light up an element for a moment (restarts if it is already lit). */
+  function flash(id) {
+    var el = id && document.getElementById(id);
+    if (!el) return;
+    el.classList.remove("search-flash");
+    void el.offsetWidth;
+    el.classList.add("search-flash");
+    setTimeout(function () { el.classList.remove("search-flash"); }, FLASH_MS);
+  }
+
+  function showGraphNode(id) {
+    K.focus(id);
+    var found = K.nodeOf(id);
+    if (found && found.view) found.view.el.scrollIntoView({ block: "start" });
+  }
+
+  /** A point: the entry page, graph centred on it, its card open. */
+  function goPoint(entry) {
+    if (!entry.node || !K.nodeOf(entry.node)) { openDoc(entry.href, entry.a, entry.node); return; }
+    K.storage("kg-focus", entry.node);
+    var section = document.getElementById("sec-项目");
+    if (section && section.classList.contains("show")) { showGraphNode(entry.node); return; }
+    window.addEventListener("hashchange", function after() {  // runs once the page has switched to 项目
+      window.removeEventListener("hashchange", after);
+      showGraphNode(entry.node);
+    });
+    location.hash = "#项目";
+  }
+
+  function go(item) {
+    var entry = item.entry, hit = item.hit;
+    if (item.kind === "point") { goPoint(entry); return; }
+    if (item.kind === "heading") { openDoc(entry.href, entry.a); flash(entry.a); return; }
+    if (hit) {  // body text has no id of its own: give the block one so the reader can scroll to it
+      var el = pageText().elements[hit.docId][hit.elementIndex];
+      if (!el.id) el.id = hit.docId + "-hit-" + hit.elementIndex;
+      openDoc("#doc-" + hit.docId, el.id);
+      flash(el.id);
+      return;
+    }
+    openDoc(entry.href, "", entry.node);
+  }
+
+  // ---- the box ----
+
+  function mount() {
+    var input = document.getElementById("search"), box = document.getElementById("search-results");
+    if (!input || !box) return;
+    var items = [], active = 0, timer = null;
+
+    function close() { box.classList.remove("show"); }
+
+    function mark(index, scroll) {
+      var rows = box.querySelectorAll(".sr-item");
+      active = Math.max(0, Math.min(index, rows.length - 1));
+      rows.forEach(function (row, i) {
+        row.classList.toggle("active", i === active);
+        if (scroll && i === active) row.scrollIntoView({ block: "nearest" });
+      });
+    }
+
+    function run() {
+      var query = input.value.trim();
+      if (!query) { items = []; box.innerHTML = ""; close(); return; }
+      var groups = buildGroups(K.data().search, pageText().docs, query);
+      items = [].concat.apply([], groups.map(function (g) { return g.items; }));
+      box.innerHTML = resultsHtml(groups, query);
+      box.classList.add("show");
+      mark(0, false);
+    }
+
+    function open(index) {
+      var item = items[index];
+      if (!item) return;
+      close();
+      input.blur();
+      go(item);
+    }
+
+    function reset() {
+      clearTimeout(timer);
+      input.value = "";
+      items = [];
+      box.innerHTML = "";
+      close();
+      input.blur();
+    }
+
+    input.addEventListener("input", function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () { timer = null; run(); }, DELAY);
+    });
+    input.addEventListener("focus", function () {  // coming back to the box: show what was found again
+      if (!input.value.trim()) return;
+      if (items.length) box.classList.add("show"); else run();
+    });
+    input.addEventListener("keydown", function (e) {
+      if (composing(e)) return;  // Enter / arrows picking a word in the IME are not ours
+      if (e.key === "Escape") { e.stopPropagation(); reset(); return; }
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        if (box.classList.contains("show")) mark(active + (e.key === "ArrowDown" ? 1 : -1), true);
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (timer) { clearTimeout(timer); timer = null; run(); }  // pressed Enter within the typing delay
+        open(active);
+      }
+    });
+    box.addEventListener("click", function (e) {
+      var row = e.target.closest(".sr-item");
+      if (row) open(Number(row.dataset.i));
+    });
+    box.addEventListener("mousemove", function (e) {
+      var row = e.target.closest(".sr-item");
+      if (row && Number(row.dataset.i) !== active) mark(Number(row.dataset.i), false);
+    });
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".nav-search")) close();
+    });
+  }
+
+  /** A key that belongs to an input method still composing (Chinese input), not to the search box. */
+  function composing(e) {
+    return !!(e.isComposing || e.keyCode === 229);
+  }
+
+  if (typeof document !== "undefined" && document.getElementById("kg-data")) mount();
+
+  return {
+    searchIndex: searchIndex, searchText: searchText, snippetOf: snippetOf, highlight: highlight,
+    aliasHint: aliasHint, buildGroups: buildGroups, resultsHtml: resultsHtml, ownText: ownText,
+    collectDocs: collectDocs, composing: composing,
+  };
+})();
+if (typeof module !== "undefined") module.exports = Search;
+</script></body></html>
